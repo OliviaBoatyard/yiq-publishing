@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Publishing Hub — YachtIQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+  /* ── YachtIQ Design Tokens ── */
+  :root {
+    /* Backgrounds */
+    --bg-base:       #fcfbf8;
+    --bg-soft:       #f5f1ec;
+    --bg-card:       #ffffff;
+
+    /* Text */
+    --text-primary:   #1b1b1b;
+    --text-secondary: #6a615b;
+    --text-muted:     #c5c1b9;
+
+    /* Brand */
+    --orange:         #fe7b02;
+    --orange-gold:    #c39553;
+    --orange-dark:    #392a1e;
+    --orange-10:      #221811;
+    --orange-86:      #e2ddd7;
+    --orange-89:      #e9e4de;
+
+    /* Borders */
+    --border:         #c5c1b9;
+    --border-soft:    #e9e4de;
+
+    /* Semantic */
+    --green:          #2b9667;
+    --green-bg:       #2b966726;
+    --red:            #d73337;
+    --red-bg:         #d7333766;
+    --red-strong:     #fe3f21;
+    --blue:           #575ecf;
+    --rose:           #f858bc;
+    --amber-bg:       #f5f1ec;
+    --amber-text:     #906847;
+
+    /* Spacing */
+    --sp-4:  4px;  --sp-6:  6px;  --sp-7:  7px;  --sp-8:  8px;
+    --sp-9:  9px;  --sp-12: 12px; --sp-15: 15px; --sp-24: 24px; --sp-40: 40px;
+
+    /* Typography */
+    --font: 'DM Sans', sans-serif;
+    --fs-10: 10px; --fs-11: 11px; --fs-14: 14px;
+    --lh-base: 20px;
+
+    /* Radius */
+    --r-sm: 4px; --r-md: 6px; --r-lg: 8px; --r-xl: 12px; --r-pill: 999px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    font-size: var(--fs-14);
+    color: var(--text-primary);
+    background: var(--bg-soft);
+    line-height: var(--lh-base);
+    min-height: 100vh;
+  }
+
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  button, select, input { font-family: var(--font); cursor: pointer; }
+
+  /* ── Layout ── */
+  .page {
+    max-width: 1152px;
+    margin: 0 auto;
+    padding: var(--sp-40) var(--sp-24);
+  }
+
+  /* ── Top Bar ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-12);
+    margin-bottom: var(--sp-24);
+    flex-wrap: wrap;
+  }
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-12);
+    flex: 1;
+    min-width: 200px;
+    flex-wrap: wrap;
+  }
+  .page-title {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    line-height: 28px;
+  }
+  .role-wrap {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-6);
+  }
+  .role-label {
+    font-size: var(--fs-11);
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* ── Form Controls ── */
+  input[type="text"], select {
+    font-family: var(--font);
+    font-size: var(--fs-14);
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: var(--sp-7) var(--sp-12);
+    outline: none;
+    transition: border-color .15s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  input[type="text"]:focus, select:focus { border-color: var(--text-secondary); }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236a615b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 9px center; padding-right: 28px; }
+  select:disabled { opacity: .45; cursor: not-allowed; background-color: var(--bg-soft); }
+
+  .search-wrap { position: relative; }
+  .search-wrap i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 15px; color: var(--text-muted); pointer-events: none; }
+  .search-wrap input { padding-left: 32px; width: 220px; }
+  @media (max-width: 640px) { .search-wrap input { width: 100%; } .search-wrap { width: 100%; } }
+
+  /* ── Filter Bar ── */
+  .filter-bar {
+    display: flex;
+    gap: var(--sp-24);
+    margin-bottom: var(--sp-24);
+    flex-wrap: wrap;
+    align-items: flex-start;
+    padding: var(--sp-15) var(--sp-15);
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--r-xl);
+  }
+  .filter-group { display: flex; flex-direction: column; gap: var(--sp-6); }
+  .filter-group-label {
+    font-size: var(--fs-10);
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1.98px;
+  }
+  .tag-row { display: flex; gap: var(--sp-4); flex-wrap: wrap; }
+  .tag {
+    font-size: var(--fs-11);
+    padding: 3px var(--sp-9);
+    border-radius: var(--r-pill);
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all .12s;
+    user-select: none;
+    font-family: var(--font);
+  }
+  .tag:hover { border-color: var(--text-secondary); color: var(--text-primary); background: var(--bg-soft); }
+  .tag.active {
+    background: var(--orange-10);
+    border-color: var(--orange-10);
+    color: #fff;
+    font-weight: 500;
+  }
+
+  /* ── Stats Row ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--sp-9);
+    margin-bottom: var(--sp-24);
+  }
+  @media (max-width: 640px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--r-xl);
+    padding: var(--sp-15) var(--sp-15);
+  }
+  .stat-card .stat-val {
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -0.6px;
+    line-height: 32px;
+  }
+  .stat-card .stat-label {
+    font-size: var(--fs-11);
+    color: var(--text-secondary);
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Table ── */
+  .table-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--r-xl);
+    overflow: hidden;
+  }
+  .table-scroll-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: var(--fs-14);
+    min-width: 680px;
+  }
+  col.c-yacht     { width: 18%; }
+  col.c-broker    { width: 16%; }
+  col.c-brokerage { width: 14%; }
+  col.c-builder   { width: 11%; }
+  col.c-endpoints { width: 26%; }
+  col.c-updated   { width: 10%; }
+  col.c-action    { width: 5%;  }
+
+  thead tr { background: var(--bg-soft); border-bottom: 1px solid var(--border-soft); }
+  th {
+    padding: var(--sp-9) var(--sp-12);
+    text-align: left;
+    font-size: var(--fs-10);
+    font-weight: 500;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: color .12s;
+    letter-spacing: 1.98px;
+    text-transform: uppercase;
+  }
+  th:hover { color: var(--text-primary); }
+  th.sorted { color: var(--text-primary); }
+  th .sort-icon { margin-left: 3px; opacity: .35; font-size: 10px; }
+  th.sorted .sort-icon { opacity: 1; color: var(--orange); }
+
+  td {
+    padding: var(--sp-12) var(--sp-12);
+    border-bottom: 1px solid var(--border-soft);
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-primary);
+    transition: background .1s;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fcfbf8; }
+
+  .yacht-name { font-weight: 500; font-size: var(--fs-14); }
+  .yacht-meta { font-size: var(--fs-11); color: var(--text-secondary); margin-top: 2px; }
+
+  .brand-badge {
+    display: inline-block;
+    font-size: var(--fs-10);
+    font-weight: 500;
+    padding: 2px var(--sp-6);
+    border-radius: var(--r-pill);
+    margin-top: 3px;
+    letter-spacing: 0.5px;
+  }
+  .brand-fraser { background: #e8e3fe; color: #3b2d8c; }
+  .brand-nj     { background: var(--green-bg); color: var(--green); }
+
+  .ep-cell { display: flex; gap: var(--sp-4); flex-wrap: wrap; }
+  .ep-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: var(--fs-10);
+    font-weight: 500;
+    padding: 2px var(--sp-7);
+    border-radius: var(--r-pill);
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+  .ep-badge i { font-size: 10px; }
+  .ep-published   { background: var(--green-bg);  color: var(--green); }
+  .ep-pending     { background: #fef3e2;           color: var(--amber-text); }
+  .ep-unpublished { background: var(--red-bg);     color: var(--red); }
+  .ep-none        { background: var(--bg-soft);    color: var(--text-secondary); border: 1px solid var(--border); }
+
+  .updated-by { font-size: var(--fs-14); color: var(--text-secondary); }
+  .updated-at { font-size: var(--fs-11); color: var(--text-muted); margin-top: 1px; }
+
+  .manage-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 5px var(--sp-9);
+    font-size: var(--fs-11);
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-4);
+    transition: all .12s;
+    font-family: var(--font);
+  }
+  .manage-btn:hover {
+    background: var(--orange);
+    color: #fff;
+    border-color: var(--orange);
+  }
+
+  .empty-row td { text-align: center; padding: 2.5rem; color: var(--text-secondary); font-size: var(--fs-14); }
+
+  /* ── Modal / Drawer ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(27,27,27,.4);
+    z-index: 200;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: var(--sp-15);
+  }
+  .modal-overlay.open { display: flex; }
+
+  .drawer {
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--r-xl);
+    width: 100%;
+    max-width: 460px;
+    max-height: calc(100vh - 30px);
+    overflow-y: auto;
+    padding: var(--sp-24);
+    box-shadow: 0 8px 40px rgba(27,27,27,.12);
+  }
+  @media (max-width: 640px) {
+    .modal-overlay { padding: 0; align-items: flex-end; }
+    .drawer { max-width: 100%; border-bottom-left-radius: 0; border-bottom-right-radius: 0; max-height: 92vh; }
+  }
+
+  .drawer-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--sp-15); }
+  .drawer-title { font-size: 18px; font-weight: 500; letter-spacing: -0.5px; }
+  .drawer-sub { font-size: var(--fs-11); color: var(--text-secondary); margin-top: 3px; }
+  .close-btn { background: none; border: 1px solid var(--border); border-radius: var(--r-md); font-size: 15px; color: var(--text-secondary); cursor: pointer; line-height: 1; padding: var(--sp-6); display: flex; align-items: center; justify-content: center; transition: all .12s; }
+  .close-btn:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+
+  .section-label {
+    font-size: var(--fs-10);
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1.98px;
+    margin: var(--sp-15) 0 var(--sp-9);
+  }
+
+  .ep-row {
+    border: 1px solid var(--border-soft);
+    border-radius: var(--r-lg);
+    padding: var(--sp-12) var(--sp-12);
+    margin-bottom: var(--sp-9);
+  }
+  .ep-row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--sp-9); }
+  .ep-row-name { font-size: var(--fs-14); font-weight: 500; }
+
+  .ep-fields { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-9); margin-top: var(--sp-6); }
+  .field-group label { font-size: var(--fs-11); color: var(--text-secondary); display: block; margin-bottom: 3px; letter-spacing: 0.5px; }
+  .field-group select { width: 100%; font-size: var(--fs-11); padding: 5px var(--sp-9); }
+  .field-read { font-size: var(--fs-14); color: var(--text-primary); padding: 4px 0; }
+  .field-read.dim { color: var(--text-secondary); font-size: var(--fs-11); }
+  .field-locked-note { display: flex; align-items: center; gap: 4px; font-size: var(--fs-10); color: var(--text-muted); margin-top: 4px; }
+  .field-locked-note i { font-size: 11px; }
+
+  .listing-link { display: flex; align-items: center; gap: var(--sp-4); margin-top: var(--sp-9); font-size: var(--fs-11); color: var(--text-secondary); }
+
+  .conditional-fields { margin-top: var(--sp-9); padding-top: var(--sp-9); border-top: 1px solid var(--border-soft); display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-9); }
+  .conditional-label { font-size: var(--fs-11); color: var(--text-secondary); display: flex; align-items: center; gap: 4px; margin-bottom: 3px; }
+  .conditional-label i { font-size: 11px; color: var(--amber-text); }
+  .auto-field { font-size: var(--fs-10); color: var(--text-muted); padding: 4px 0; display: flex; align-items: center; gap: 4px; }
+  .auto-field i { font-size: 11px; }
+
+  .ep-row-meta { display: flex; gap: var(--sp-15); margin-top: var(--sp-9); padding-top: var(--sp-9); border-top: 1px solid var(--border-soft); }
+  .ep-meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .ep-meta-label { font-size: var(--fs-10); color: var(--text-muted); letter-spacing: 0.5px; }
+  .ep-meta-value { font-size: var(--fs-11); color: var(--text-secondary); }
+
+  .drawer-footer { display: flex; justify-content: flex-end; gap: var(--sp-9); margin-top: var(--sp-24); padding-top: var(--sp-15); border-top: 1px solid var(--border-soft); }
+
+  .btn-primary {
+    background: var(--orange-10);
+    color: #fff;
+    border: none;
+    border-radius: var(--r-md);
+    padding: var(--sp-9) var(--sp-24);
+    font-size: var(--fs-14);
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity .12s;
+    font-family: var(--font);
+  }
+  .btn-primary:hover { background: var(--orange); }
+
+  .btn-cancel {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: var(--sp-9) var(--sp-24);
+    font-size: var(--fs-14);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background .12s;
+    font-family: var(--font);
+  }
+  .btn-cancel:hover { background: var(--bg-soft); }
+
+  /* Role note */
+  .role-scope-note {
+    display: flex; align-items: flex-start; gap: var(--sp-9);
+    background: var(--bg-soft); border: 1px solid var(--border-soft);
+    border-radius: var(--r-lg); padding: var(--sp-9) var(--sp-12);
+    margin-bottom: var(--sp-15);
+  }
+  .role-scope-note i { font-size: 14px; color: var(--text-secondary); margin-top: 1px; flex-shrink: 0; }
+  .role-scope-note span { font-size: var(--fs-11); color: var(--text-secondary); line-height: 1.5; }
+
+  /* YachtIQ wordmark */
+  .yiq-logo {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.98px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    padding: 0 0 var(--sp-24) 0;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .yiq-logo span { color: var(--orange-gold); font-weight: 300; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Logo -->
+  <div class="yiq-logo">YACHT<span>IQ</span></div>
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="page-title">Publishing Hub</span>
+      <div class="role-wrap">
+        <span class="role-label">Viewing as</span>
+        <select id="role-sel">
+          <option value="admin">Admin</option>
+          <option value="marketing">Marketing user</option>
+          <option value="broker">Broker (Sales)</option>
+          <option value="assistant">Assistant (Sales)</option>
+          <option value="datateam">Data team user</option>
+        </select>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <i class="ti ti-search" aria-hidden="true"></i>
+      <input type="text" id="search" placeholder="Search yacht, broker...">
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="filter-group-label">Brand</span>
+      <div class="tag-row" id="f-brand">
+        <span class="tag active" data-v="all">All</span>
+        <span class="tag" data-v="fraser">Fraser</span>
+        <span class="tag" data-v="nj">N&amp;J</span>
+      </div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-group-label">Status</span>
+      <div class="tag-row" id="f-status">
+        <span class="tag active" data-v="all">All</span>
+        <span class="tag" data-v="published">Published</span>
+        <span class="tag" data-v="pending">Pending</span>
+        <span class="tag" data-v="unpublished">Unpublished</span>
+        <span class="tag" data-v="none">Not published</span>
+      </div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-group-label">Builder</span>
+      <div class="tag-row" id="f-builder"></div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-group-label">Brokerage</span>
+      <div class="tag-row" id="f-brok"></div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row" id="stats"></div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <div class="table-scroll-wrap">
+      <table>
+        <colgroup>
+          <col class="c-yacht">
+          <col class="c-broker">
+          <col class="c-brokerage">
+          <col class="c-builder">
+          <col class="c-endpoints">
+          <col class="c-updated">
+          <col class="c-action">
+        </colgroup>
+        <thead>
+          <tr>
+            <th data-col="name">Yacht <i class="ti ti-selector sort-icon"></i></th>
+            <th data-col="broker">Broker <i class="ti ti-selector sort-icon"></i></th>
+            <th data-col="brokerage">Brokerage <i class="ti ti-selector sort-icon"></i></th>
+            <th data-col="builder">Builder <i class="ti ti-selector sort-icon"></i></th>
+            <th>Endpoints</th>
+            <th data-col="updated">Last updated <i class="ti ti-selector sort-icon"></i></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- Drawer -->
+<div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-label="Manage publishing">
+  <div class="drawer" id="drawer"></div>
+</div>
+
+<script>
+const YACHTS = [
+  { id:1, name:"Lady Anastasia", loa:"52m", year:2018, brand:"fraser", broker:"James Harrington", brokerage:"Fraser Yachts", builder:"Lürssen", updatedBy:"M. Chen", updatedAt:"May 13, 2026",
+    endpoints:[
+      { id:"yw-f",    label:"Yachtworld (Fraser)", isBrandWebsite:false, status:"published",   cobrok:"yes", request:"—",                  approval:"Request approved", requestedBy:"J. Harrington", requestedAt:"May 12, 2026", lastUpdatedBy:"M. Chen",      lastUpdatedAt:"May 13, 2026", showAsSold:null, hideFromWeb:null, url:"https://yachtworld.com/123" },
+      { id:"yatco-f", label:"Yatco (Fraser)",       isBrandWebsite:false, status:"pending",     cobrok:"yes", request:"Publish requested",  approval:"Pending approval", requestedBy:"J. Harrington", requestedAt:"May 13, 2026", lastUpdatedBy:"J. Harrington", lastUpdatedAt:"May 13, 2026", showAsSold:null, hideFromWeb:null, url:"" },
+      { id:"fw",      label:"Fraser website",        isBrandWebsite:true,  status:"published",   cobrok:"n/a", request:"—",                  approval:"Request approved", requestedBy:"J. Harrington", requestedAt:"May 10, 2026", lastUpdatedBy:"M. Chen",      lastUpdatedAt:"May 13, 2026", showAsSold:null, hideFromWeb:null, url:"https://fraser.com/lady-anastasia" },
+    ]},
+  { id:2, name:"Aqua Libre", loa:"44m", year:2015, brand:"nj", broker:"Sophie Beaumont", brokerage:"N&J Management", builder:"Feadship", updatedBy:"—", updatedAt:"—",
+    endpoints:[
+      { id:"yw-nj",    label:"Yachtworld (N&J)", isBrandWebsite:false, status:"none", cobrok:"no",  request:"—", approval:"—", requestedBy:"—", requestedAt:"—", lastUpdatedBy:"—", lastUpdatedAt:"—", showAsSold:null, hideFromWeb:null, url:"" },
+      { id:"yatco-nj", label:"Yatco (N&J)",       isBrandWebsite:false, status:"none", cobrok:"no",  request:"—", approval:"—", requestedBy:"—", requestedAt:"—", lastUpdatedBy:"—", lastUpdatedAt:"—", showAsSold:null, hideFromWeb:null, url:"" },
+      { id:"nw",       label:"N&J website",        isBrandWebsite:true,  status:"none", cobrok:"n/a", request:"—", approval:"—", requestedBy:"—", requestedAt:"—", lastUpdatedBy:"—", lastUpdatedAt:"—", showAsSold:null, hideFromWeb:null, url:"" },
+    ]},
+  { id:3, name:"Silver Moon", loa:"63m", year:2021, brand:"fraser", broker:"Carlos Medina", brokerage:"Fraser Yachts", builder:"Benetti", updatedBy:"R. Torres", updatedAt:"May 10, 2026",
+    endpoints:[
+      { id:"yw-f",    label:"Yachtworld (Fraser)", isBrandWebsite:false, status:"published",   cobrok:"yes", request:"—",                   approval:"Request approved", requestedBy:"C. Medina", requestedAt:"May 2, 2026",  lastUpdatedBy:"R. Torres", lastUpdatedAt:"May 10, 2026", showAsSold:null, hideFromWeb:null, url:"https://yachtworld.com/456" },
+      { id:"yatco-f", label:"Yatco (Fraser)",       isBrandWebsite:false, status:"unpublished", cobrok:"no",  request:"Unpublish requested", approval:"Request approved", requestedBy:"C. Medina", requestedAt:"May 9, 2026",  lastUpdatedBy:"R. Torres", lastUpdatedAt:"May 10, 2026", showAsSold:"yes", hideFromWeb:"no",  url:"" },
+      { id:"fw",      label:"Fraser website",        isBrandWebsite:true,  status:"published",   cobrok:"n/a", request:"—",                   approval:"Request approved", requestedBy:"C. Medina", requestedAt:"May 2, 2026",  lastUpdatedBy:"R. Torres", lastUpdatedAt:"May 10, 2026", showAsSold:null, hideFromWeb:null, url:"https://fraser.com/silver-moon" },
+    ]},
+  { id:4, name:"Blue Horizon", loa:"38m", year:2012, brand:"nj", broker:"Anna Kowalski", brokerage:"N&J Management", builder:"Heesen", updatedBy:"A. Kowalski", updatedAt:"May 14, 2026",
+    endpoints:[
+      { id:"yw-nj",    label:"Yachtworld (N&J)", isBrandWebsite:false, status:"pending", cobrok:"yes", request:"Publish requested", approval:"Pending approval", requestedBy:"A. Kowalski", requestedAt:"May 14, 2026", lastUpdatedBy:"A. Kowalski", lastUpdatedAt:"May 14, 2026", showAsSold:null, hideFromWeb:null, url:"" },
+      { id:"yatco-nj", label:"Yatco (N&J)",       isBrandWebsite:false, status:"none",    cobrok:"no",  request:"—",                 approval:"—",               requestedBy:"—",           requestedAt:"—",            lastUpdatedBy:"—",           lastUpdatedAt:"—",            showAsSold:null, hideFromWeb:null, url:"" },
+      { id:"nw",       label:"N&J website",        isBrandWebsite:true,  status:"pending", cobrok:"n/a", request:"Publish requested", approval:"Pending approval", requestedBy:"A. Kowalski", requestedAt:"May 14, 2026", lastUpdatedBy:"A. Kowalski", lastUpdatedAt:"May 14, 2026", showAsSold:null, hideFromWeb:null, url:"" },
+    ]},
+  { id:5, name:"Serenity Now", loa:"55m", year:2019, brand:"fraser", broker:"James Harrington", brokerage:"Fraser Yachts", builder:"Feadship", updatedBy:"—", updatedAt:"—",
+    endpoints:[
+      { id:"yw-f",    label:"Yachtworld (Fraser)", isBrandWebsite:false, status:"none", cobrok:"no",  request:"—", approval:"—", requestedBy:"—", requestedAt:"—", lastUpdatedBy:"—", lastUpdatedAt:"—", showAsSold:null, hideFromWeb:null, url:"" },
+      { id:"yatco-f", label:"Yatco (Fraser)",       isBrandWebsite:false, status:"none", cobrok:"no",  request:"—", approval:"—", requestedBy:"—", requestedAt:"—", lastUpdatedBy:"—", lastUpdatedAt:"—", showAsSold:null, hideFromWeb:null, url:"" },
+      { id:"fw",      label:"Fraser website",        isBrandWebsite:true,  status:"none", cobrok:"n/a", request:"—", approval:"—", requestedBy:"—", requestedAt:"—", lastUpdatedBy:"—", lastUpdatedAt:"—", showAsSold:null, hideFromWeb:null, url:"" },
+    ]},
+  { id:6, name:"Tidal Wave", loa:"41m", year:2016, brand:"nj", broker:"Marco Visser", brokerage:"N&J Management", builder:"Amels", updatedBy:"L. Petit", updatedAt:"May 7, 2026",
+    endpoints:[
+      { id:"yw-nj",    label:"Yachtworld (N&J)", isBrandWebsite:false, status:"published", cobrok:"yes", request:"—", approval:"Request approved", requestedBy:"M. Visser", requestedAt:"Apr 28, 2026", lastUpdatedBy:"L. Petit", lastUpdatedAt:"May 7, 2026", showAsSold:null, hideFromWeb:null, url:"https://yachtworld.com/789" },
+      { id:"yatco-nj", label:"Yatco (N&J)",       isBrandWebsite:false, status:"published", cobrok:"yes", request:"—", approval:"Request approved", requestedBy:"M. Visser", requestedAt:"Apr 28, 2026", lastUpdatedBy:"L. Petit", lastUpdatedAt:"May 7, 2026", showAsSold:null, hideFromWeb:null, url:"" },
+      { id:"nw",       label:"N&J website",        isBrandWebsite:true,  status:"published", cobrok:"n/a", request:"—", approval:"Request approved", requestedBy:"M. Visser", requestedAt:"Apr 28, 2026", lastUpdatedBy:"L. Petit", lastUpdatedAt:"May 7, 2026", showAsSold:null, hideFromWeb:null, url:"https://njmanagement.com/tidal-wave" },
+    ]},
+];
+
+const ROLES = {
+  admin:     { label:"Admin",              canRequest:true,  canApprove:true,  canCobrok:true  },
+  marketing: { label:"Marketing user",     canRequest:true,  canApprove:true,  canCobrok:false },
+  broker:    { label:"Broker (Sales)",     canRequest:true,  canApprove:false, canCobrok:true  },
+  assistant: { label:"Assistant (Sales)",  canRequest:true,  canApprove:false, canCobrok:true  },
+  datateam:  { label:"Data team user",     canRequest:true,  canApprove:false, canCobrok:true  },
+};
+
+let sortCol = "name", sortAsc = true;
+let fBrand = "all", fStatus = "all", fBuilder = "all", fBrok = "all";
+let search = "", role = "admin";
+
+function overallStatus(y) {
+  const ss = y.endpoints.map(e => e.status);
+  if (ss.includes("pending"))     return "pending";
+  if (ss.includes("published"))   return "published";
+  if (ss.includes("unpublished")) return "unpublished";
+  return "none";
+}
+
+function buildDynamicFilters() {
+  const builders = [...new Set(YACHTS.map(y => y.builder))].sort();
+  const broks    = [...new Set(YACHTS.map(y => y.brokerage))].sort();
+  const bf = document.getElementById("f-builder");
+  bf.innerHTML = `<span class="tag active" data-v="all">All</span>` +
+    builders.map(b => `<span class="tag" data-v="${b}">${b}</span>`).join("");
+  const brf = document.getElementById("f-brok");
+  brf.innerHTML = `<span class="tag active" data-v="all">All</span>` +
+    broks.map(b => `<span class="tag" data-v="${b}">${b.replace("N&J Management","N&J")}</span>`).join("");
+  bindTags("f-builder", v => { fBuilder = v; renderTable(); });
+  bindTags("f-brok",    v => { fBrok    = v; renderTable(); });
+}
+
+function bindTags(id, cb) {
+  document.getElementById(id).querySelectorAll(".tag").forEach(t => {
+    t.addEventListener("click", () => {
+      document.getElementById(id).querySelectorAll(".tag").forEach(x => x.classList.remove("active"));
+      t.classList.add("active");
+      cb(t.dataset.v);
+    });
+  });
+}
+
+function filtered() {
+  return YACHTS.filter(y => {
+    if (fBrand   !== "all" && y.brand !== fBrand)                          return false;
+    if (fStatus  !== "all" && overallStatus(y) !== fStatus)                return false;
+    if (fBuilder !== "all" && y.builder !== fBuilder)                      return false;
+    if (fBrok    !== "all" && !y.brokerage.includes(fBrok === "N&J" ? "N&J" : fBrok)) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      if (![y.name, y.broker, y.builder, y.brokerage].some(s => s.toLowerCase().includes(q))) return false;
+    }
+    return true;
+  }).sort((a, b) => {
+    let va, vb;
+    if      (sortCol === "name")      { va = a.name;      vb = b.name; }
+    else if (sortCol === "broker")    { va = a.broker;    vb = b.broker; }
+    else if (sortCol === "brokerage") { va = a.brokerage; vb = b.brokerage; }
+    else if (sortCol === "builder")   { va = a.builder;   vb = b.builder; }
+    else if (sortCol === "updated")   { va = a.updatedAt === "—" ? "0" : a.updatedAt; vb = b.updatedAt === "—" ? "0" : b.updatedAt; }
+    else                              { va = overallStatus(a); vb = overallStatus(b); }
+    return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+  });
+}
+
+function epBadge(ep) {
+  const cfg = {
+    published:   ["ep-published",   "ti-circle-check"],
+    pending:     ["ep-pending",     "ti-clock"],
+    unpublished: ["ep-unpublished", "ti-circle-x"],
+    none:        ["ep-none",        "ti-circle-dashed"],
+  };
+  const [cls, ico] = cfg[ep.status] || cfg.none;
+  const short = ep.label
+    .replace("Yachtworld","YW").replace(" website"," web")
+    .replace("(Fraser)","FR").replace("(N&J)","NJ")
+    .replace("Fraser ","FR ").replace("N&J ","NJ ");
+  return `<span class="ep-badge ${cls}" title="${ep.label}: ${ep.status}"><i class="ti ${ico}" aria-hidden="true"></i>${short}</span>`;
+}
+
+function renderTable() {
+  const rows  = filtered();
+  const tbody = document.getElementById("tbody");
+  if (!rows.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="7">No yachts match the current filters.</td></tr>`;
+    renderStats(rows); return;
+  }
+  tbody.innerHTML = rows.map(y => `
+    <tr>
+      <td><div class="yacht-name">${y.name}</div><div class="yacht-meta">${y.loa} · ${y.year}</div></td>
+      <td><div>${y.broker}</div><span class="brand-badge brand-${y.brand}">${y.brand === "fraser" ? "Fraser" : "N&J"}</span></td>
+      <td style="color:var(--text-secondary);font-size:var(--fs-14)">${y.brokerage}</td>
+      <td style="color:var(--text-secondary);font-size:var(--fs-14)">${y.builder}</td>
+      <td><div class="ep-cell">${y.endpoints.map(epBadge).join("")}</div></td>
+      <td><div class="updated-by">${y.updatedBy}</div><div class="updated-at">${y.updatedAt}</div></td>
+      <td><button class="manage-btn" onclick="openDrawer(${y.id})"><i class="ti ti-settings" aria-hidden="true"></i> Manage</button></td>
+    </tr>
+  `).join("");
+  renderStats(rows);
+}
+
+function renderStats(rows) {
+  const allEps = YACHTS.flatMap(y => y.endpoints);
+  document.getElementById("stats").innerHTML = `
+    <div class="stat-card"><div class="stat-val">${rows.length}</div><div class="stat-label">Yachts shown</div></div>
+    <div class="stat-card"><div class="stat-val">${allEps.filter(e => e.status === "published").length}</div><div class="stat-label">Published endpoints</div></div>
+    <div class="stat-card"><div class="stat-val">${allEps.filter(e => e.status === "pending").length}</div><div class="stat-label">Pending approval</div></div>
+    <div class="stat-card"><div class="stat-val">${YACHTS.filter(y => overallStatus(y) === "none").length}</div><div class="stat-label">Not published</div></div>
+  `;
+}
+
+function openDrawer(id) {
+  const y = YACHTS.find(y => y.id === id);
+  const r = ROLES[role];
+  const stMap = { published:"ep-published", pending:"ep-pending", unpublished:"ep-unpublished", none:"ep-none" };
+  const stLbl = { published:"Published", pending:"Pending", unpublished:"Unpublished", none:"Not published" };
+  const stIco = { published:"ti-circle-check", pending:"ti-clock", unpublished:"ti-circle-x", none:"ti-circle-dashed" };
+
+  const epRows = y.endpoints.map(ep => {
+    const isUnpublishReq = ep.request === "Unpublish requested";
+    const showConditional = ep.isBrandWebsite && isUnpublishReq;
+    const requestSelect = r.canRequest
+      ? `<select><option ${ep.request==="—"?"selected":""}>—</option><option ${ep.request==="No request"?"selected":""}>No request</option><option ${ep.request==="Publish requested"?"selected":""}>Publish requested</option><option ${ep.request==="Unpublish requested"?"selected":""}>Unpublish requested</option></select>`
+      : `<select disabled><option ${ep.request==="—"?"selected":""}>—</option><option ${ep.request==="No request"?"selected":""}>No request</option><option ${ep.request==="Publish requested"?"selected":""}>Publish requested</option><option ${ep.request==="Unpublish requested"?"selected":""}>Unpublish requested</option></select><div class="field-locked-note"><i class="ti ti-lock"></i>Not editable for ${r.label}</div>`;
+    const approvalSelect = r.canApprove
+      ? `<select><option ${ep.approval==="—"?"selected":""}>—</option><option ${ep.approval==="Pending approval"?"selected":""}>Pending approval</option><option ${ep.approval==="Request approved"?"selected":""}>Request approved</option><option ${ep.approval==="Unpublish requested"?"selected":""}>Unpublish requested</option><option ${ep.approval==="Unpublished"?"selected":""}>Unpublished</option></select>`
+      : `<select disabled><option ${ep.approval==="—"?"selected":""}>—</option><option ${ep.approval==="Pending approval"?"selected":""}>Pending approval</option><option ${ep.approval==="Request approved"?"selected":""}>Request approved</option><option ${ep.approval==="Unpublish requested"?"selected":""}>Unpublish requested</option><option ${ep.approval==="Unpublished"?"selected":""}>Unpublished</option></select><div class="field-locked-note"><i class="ti ti-lock"></i>Not editable for ${r.label}</div>`;
+    const cobrokField = ep.cobrok==="n/a"
+      ? `<div class="field-read dim">Not available</div>`
+      : !r.canCobrok
+        ? `<select disabled><option ${ep.cobrok==="yes"?"selected":""}>Yes</option><option ${ep.cobrok==="no"?"selected":""}>No</option><option>Not available</option></select><div class="field-locked-note"><i class="ti ti-lock"></i>Not editable for ${r.label}</div>`
+        : `<select><option ${ep.cobrok==="yes"?"selected":""}>Yes</option><option ${ep.cobrok==="no"?"selected":""}>No</option><option>Not available</option></select>`;
+    const conditionalFields = showConditional
+      ? `<div class="conditional-fields"><div class="field-group"><label class="conditional-label"><i class="ti ti-alert-triangle"></i>Show as SOLD</label><select><option ${ep.showAsSold==="yes"?"selected":""}>Yes</option><option ${ep.showAsSold==="no"?"selected":""}>No</option></select></div><div class="field-group"><label class="conditional-label"><i class="ti ti-alert-triangle"></i>Hide from website</label><select><option ${ep.hideFromWeb==="yes"?"selected":""}>Yes</option><option ${ep.hideFromWeb==="no"?"selected":""}>No</option></select></div></div>`
+      : (ep.isBrandWebsite && !isUnpublishReq
+          ? `<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border-soft)"><div class="auto-field"><i class="ti ti-info-circle"></i>Show as SOLD and Hide from website appear when Unpublish requested is selected.</div></div>`
+          : "");
+    const urlRow = ep.url
+      ? `<div class="listing-link"><i class="ti ti-external-link"></i><a href="${ep.url}" target="_blank">View listing</a></div>`
+      : `<div class="listing-link"><i class="ti ti-link"></i><span style="color:var(--text-muted)">URL auto-populated after publish confirmation</span></div>`;
+    return `
+      <div class="ep-row">
+        <div class="ep-row-header">
+          <span class="ep-row-name">${ep.label}</span>
+          <span class="ep-badge ${stMap[ep.status]}"><i class="ti ${stIco[ep.status]}"></i>${stLbl[ep.status]}</span>
+        </div>
+        <div class="ep-fields">
+          <div class="field-group"><label>Request</label>${requestSelect}</div>
+          <div class="field-group"><label>Approval status</label>${approvalSelect}</div>
+          <div class="field-group"><label>Allow co-brokerage</label>${cobrokField}</div>
+          <div class="field-group"><label>Requested by</label><div class="field-read">${ep.requestedBy}</div>${ep.requestedAt !== "—" ? `<div class="field-read dim">${ep.requestedAt}</div>` : ""}</div>
+        </div>
+        ${conditionalFields}
+        <div class="ep-row-meta">
+          <div class="ep-meta-item"><span class="ep-meta-label">Last updated by</span><span class="ep-meta-value">${ep.lastUpdatedBy}</span></div>
+          <div class="ep-meta-item"><span class="ep-meta-label">Last updated at</span><span class="ep-meta-value">${ep.lastUpdatedAt}</span></div>
+        </div>
+        ${urlRow}
+      </div>`;
+  }).join("");
+
+  const roleNotes = {
+    admin:     { icon:"ti-shield-check", text:"Full access — all brands and all yachts." },
+    marketing: { icon:"ti-speakerphone",  text:"Can approve requests. Cannot edit Request or Co-brokerage." },
+    broker:    { icon:"ti-user",          text:"Can request on own CA yachts only. Cannot approve." },
+    assistant: { icon:"ti-users",         text:"Can request on linked broker's CA yachts. Cannot approve." },
+    datateam:  { icon:"ti-database",      text:"Can request on same-brand yachts. Cannot approve." },
+  };
+  const rn = roleNotes[role] || roleNotes.admin;
+
+  document.getElementById("drawer").innerHTML = `
+    <div class="drawer-header">
+      <div>
+        <div class="drawer-title">${y.name}</div>
+        <div class="drawer-sub">${y.loa} · ${y.year} · ${y.builder} · <span class="brand-badge brand-${y.brand}" style="vertical-align:middle">${y.brand === "fraser" ? "Fraser" : "N&J"}</span></div>
+        <div class="drawer-sub" style="margin-top:4px">CA broker: ${y.broker} · ${y.brokerage}</div>
+      </div>
+      <button class="close-btn" onclick="closeDrawer()" aria-label="Close panel"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="role-scope-note"><i class="ti ${rn.icon}"></i><span>${rn.text}</span></div>
+    <div class="section-label">Endpoints</div>
+    ${epRows}
+    <div class="drawer-footer">
+      <button class="btn-cancel" onclick="closeDrawer()">Cancel</button>
+      <button class="btn-primary" onclick="closeDrawer()">Save changes</button>
+    </div>
+  `;
+  document.getElementById("modal").classList.add("open");
+}
+
+function closeDrawer() {
+  document.getElementById("modal").classList.remove("open");
+}
+
+document.getElementById("modal").addEventListener("click", e => {
+  if (e.target === document.getElementById("modal")) closeDrawer();
+});
+document.getElementById("search").addEventListener("input", e => { search = e.target.value; renderTable(); });
+document.getElementById("role-sel").addEventListener("change", e => { role = e.target.value; renderTable(); });
+
+bindTags("f-brand",  v => { fBrand  = v; renderTable(); });
+bindTags("f-status", v => { fStatus = v; renderTable(); });
+
+document.querySelectorAll("th[data-col]").forEach(th => {
+  th.addEventListener("click", () => {
+    const col = th.dataset.col;
+    if (sortCol === col) { sortAsc = !sortAsc; }
+    else { sortCol = col; sortAsc = true; }
+    document.querySelectorAll("th").forEach(x => x.classList.remove("sorted"));
+    th.classList.add("sorted");
+    renderTable();
+  });
+});
+
+buildDynamicFilters();
+renderTable();
+</script>
+</body>
+</html>
