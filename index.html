@@ -462,11 +462,8 @@
       <div class="role-wrap">
         <span class="role-label">Viewing as</span>
         <select id="role-sel">
-          <option value="admin">Admin</option>
-          <option value="marketing">Marketing user</option>
-          <option value="broker">Broker (Sales)</option>
-          <option value="assistant">Assistant (Sales)</option>
-          <option value="datateam">Data team user</option>
+          <option value="admin">Admin (Data team)</option>
+          <option value="marketing">Marketing</option>
         </select>
       </div>
     </div>
@@ -592,11 +589,8 @@ const YACHTS = [
 ];
 
 const ROLES = {
-  admin:     { label:"Admin",              canRequest:true,  canApprove:true,  canCobrok:true  },
-  marketing: { label:"Marketing user",     canRequest:true,  canApprove:true,  canCobrok:false },
-  broker:    { label:"Broker (Sales)",     canRequest:true,  canApprove:false, canCobrok:true  },
-  assistant: { label:"Assistant (Sales)",  canRequest:true,  canApprove:false, canCobrok:true  },
-  datateam:  { label:"Data team user",     canRequest:true,  canApprove:false, canCobrok:true  },
+  admin:     { label:"Admin (Data team)", canRequest:true,  canApprove:true,  canCobrok:true  },
+  marketing: { label:"Marketing",         canRequest:true,  canApprove:true,  canCobrok:false },
 };
 
 let sortCol = "name", sortAsc = true;
@@ -757,11 +751,8 @@ function openDrawer(id) {
   }).join("");
 
   const roleNotes = {
-    admin:     { icon:"ti-shield-check", text:"Full access — all brands and all yachts." },
-    marketing: { icon:"ti-speakerphone",  text:"Can approve requests. Cannot edit Request or Co-brokerage." },
-    broker:    { icon:"ti-user",          text:"Can request on own CA yachts only. Cannot approve." },
-    assistant: { icon:"ti-users",         text:"Can request on linked broker's CA yachts. Cannot approve." },
-    datateam:  { icon:"ti-database",      text:"Can request on same-brand yachts. Cannot approve." },
+    admin:     { icon:"ti-shield-check", text:"Admin (Data team) — full access across all brands. Can request, approve, and edit co-brokerage." },
+    marketing: { icon:"ti-speakerphone", text:"Marketing — can request and approve publish/unpublish. Cannot edit co-brokerage." },
   };
   const rn = roleNotes[role] || roleNotes.admin;
 
