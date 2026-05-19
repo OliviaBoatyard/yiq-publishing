@@ -219,19 +219,19 @@
     border-collapse: collapse;
     table-layout: fixed;
     font-size: var(--fs-14);
-    min-width: 680px;
+    min-width: 760px;
   }
-  col.c-yacht     { width: 18%; }
-  col.c-broker    { width: 16%; }
-  col.c-brokerage { width: 14%; }
-  col.c-builder   { width: 11%; }
-  col.c-endpoints { width: 26%; }
-  col.c-updated   { width: 10%; }
-  col.c-action    { width: 5%;  }
+  col.c-yacht     { width: 20%; }
+  col.c-broker    { width: 18%; }
+  col.c-brokerage { width: 0; display: none; }
+  col.c-builder   { width: 10%; }
+  col.c-endpoints { width: 32%; }
+  col.c-updated   { width: 12%; }
+  col.c-action    { width: 8%;  }
 
   thead tr { background: var(--bg-soft); border-bottom: 1px solid var(--border-soft); }
   th {
-    padding: var(--sp-9) var(--sp-12);
+    padding: var(--sp-9) var(--sp-9);
     text-align: left;
     font-size: var(--fs-10);
     font-weight: 500;
@@ -249,7 +249,7 @@
   th.sorted .sort-icon { opacity: 1; color: var(--orange); }
 
   td {
-    padding: var(--sp-12) var(--sp-12);
+    padding: var(--sp-9) var(--sp-9);
     border-bottom: 1px solid var(--border-soft);
     vertical-align: middle;
     overflow: hidden;
@@ -258,6 +258,7 @@
     color: var(--text-primary);
     transition: background .1s;
   }
+  td.c-brokerage-cell { display: none; }
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: #fcfbf8; }
 
@@ -303,20 +304,58 @@
     background: none;
     border: 1px solid var(--border);
     border-radius: var(--r-md);
-    padding: 5px var(--sp-9);
+    padding: 5px var(--sp-7);
     font-size: var(--fs-11);
     color: var(--text-secondary);
     display: inline-flex;
     align-items: center;
-    gap: var(--sp-4);
+    gap: 3px;
     transition: all .12s;
     font-family: var(--font);
+    white-space: nowrap;
   }
   .manage-btn:hover {
     background: var(--orange);
     color: #fff;
     border-color: var(--orange);
   }
+
+  /* ── Retry flow ── */
+  .ep-error-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-9);
+    background: #fde8e8;
+    border: 1px solid #f9c0c0;
+    border-radius: var(--r-md);
+    padding: var(--sp-9) var(--sp-12);
+    margin-top: var(--sp-9);
+  }
+  .ep-error-banner i { font-size: 14px; color: var(--red-strong); flex-shrink: 0; margin-top: 1px; }
+  .ep-error-banner-body { flex: 1; }
+  .ep-error-banner-title { font-size: var(--fs-11); font-weight: 500; color: var(--red-strong); }
+  .ep-error-banner-msg   { font-size: var(--fs-10); color: #a02020; margin-top: 2px; line-height: 1.5; }
+  .retry-btn {
+    margin-top: var(--sp-7);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--red-strong);
+    color: #fff;
+    border: none;
+    border-radius: var(--r-md);
+    padding: 5px var(--sp-12);
+    font-size: var(--fs-11);
+    font-weight: 500;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: opacity .12s;
+  }
+  .retry-btn:hover { opacity: .85; }
+  .retry-btn:disabled { opacity: .5; cursor: not-allowed; }
+  .retry-btn.retrying { background: var(--amber-text); }
+  .retry-locked-note { display: flex; align-items: center; gap: 4px; font-size: var(--fs-10); color: #a02020; margin-top: var(--sp-6); }
+  .retry-locked-note i { font-size: 11px; }
 
   .empty-row td { text-align: center; padding: 2.5rem; color: var(--text-secondary); font-size: var(--fs-14); }
 
@@ -370,6 +409,7 @@
     padding: var(--sp-12) var(--sp-12);
     margin-bottom: var(--sp-9);
   }
+  .ep-row-error { border-color: #f9c0c0; background: #fffafa; }
   .ep-row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--sp-9); }
   .ep-row-name { font-size: var(--fs-14); font-weight: 500; }
 
@@ -446,6 +486,8 @@
     gap: 0;
   }
   .yiq-logo span { color: var(--orange-gold); font-weight: 300; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -529,7 +571,7 @@
           <tr>
             <th data-col="name">Yacht <i class="ti ti-selector sort-icon"></i></th>
             <th data-col="broker">Broker <i class="ti ti-selector sort-icon"></i></th>
-            <th data-col="brokerage">Brokerage <i class="ti ti-selector sort-icon"></i></th>
+            <th data-col="brokerage" style="display:none">Brokerage</th>
             <th data-col="builder">Builder <i class="ti ti-selector sort-icon"></i></th>
             <th>Marketplaces</th>
             <th data-col="updated">Last updated <i class="ti ti-selector sort-icon"></i></th>
@@ -552,39 +594,39 @@
 const YACHTS = [
   { id:1, name:"Lady Anastasia", loa:"52m", year:2018, brand:"fraser", type:"sales", broker:"James Harrington", brokerage:"Fraser Yachts", builder:"Lürssen", updatedBy:"M. Chen", updatedAt:"May 13, 2026",
     endpoints:[
-      { id:"yw-f",    label:"Yachtworld (Fraser)", isBrandWebsite:false, status:"published",        cobrok:"yes", request:"—",                  approval:"Request approved", requestedBy:"J. Harrington", requestedAt:"May 12, 2026", lastUpdatedBy:"M. Chen",      lastUpdatedAt:"May 13, 2026", showAsSold:null, hideFromWeb:null, url:"https://yachtworld.com/123" },
-      { id:"yatco-f", label:"Yatco (Fraser)",       isBrandWebsite:false, status:"pending-approval", cobrok:"yes", request:"Publish requested",  approval:"Pending approval", requestedBy:"J. Harrington", requestedAt:"May 13, 2026", lastUpdatedBy:"J. Harrington", lastUpdatedAt:"May 13, 2026", showAsSold:null, hideFromWeb:null, url:"" },
-      { id:"fw",      label:"Fraser website",        isBrandWebsite:true,  status:"published",        cobrok:"n/a", request:"—",                  approval:"Request approved", requestedBy:"J. Harrington", requestedAt:"May 10, 2026", lastUpdatedBy:"M. Chen",      lastUpdatedAt:"May 13, 2026", showAsSold:null, hideFromWeb:null, url:"https://fraser.com/lady-anastasia" },
+      { id:"yw-f-1",    label:"Yachtworld (Fraser)", isBrandWebsite:false, status:"error",           cobrok:"yes", request:"Publish requested",  approval:"Request approved",  requestedBy:"J. Harrington", requestedAt:"May 12, 2026", lastUpdatedBy:"M. Chen",      lastUpdatedAt:"May 13, 2026", showAsSold:null, hideFromWeb:null, url:"",                                    errorMsg:"Connection timeout — Yachtworld API did not respond after 3 attempts. Verify API credentials and retry." },
+      { id:"yatco-f-1", label:"Yatco (Fraser)",       isBrandWebsite:false, status:"pending-approval", cobrok:"yes", request:"Publish requested",  approval:"Pending approval",  requestedBy:"J. Harrington", requestedAt:"May 13, 2026", lastUpdatedBy:"J. Harrington", lastUpdatedAt:"May 13, 2026", showAsSold:null, hideFromWeb:null, url:"",                                    errorMsg:null },
+      { id:"fw-1",      label:"Fraser website",        isBrandWebsite:true,  status:"published",        cobrok:"n/a", request:"—",                  approval:"Request approved",  requestedBy:"J. Harrington", requestedAt:"May 10, 2026", lastUpdatedBy:"M. Chen",      lastUpdatedAt:"May 13, 2026", showAsSold:null, hideFromWeb:null, url:"https://fraser.com/lady-anastasia", errorMsg:null },
     ]},
   { id:2, name:"Aqua Libre", loa:"44m", year:2015, brand:"nj", type:"charter", broker:"Sophie Beaumont", brokerage:"N&J Management", builder:"Feadship", updatedBy:"—", updatedAt:"—",
     endpoints:[
-      { id:"yw-nj",    label:"Yachtworld (N&J)", isBrandWebsite:false, status:"not-published", cobrok:"no",  request:"—", approval:"—", requestedBy:"—", requestedAt:"—", lastUpdatedBy:"—", lastUpdatedAt:"—", showAsSold:null, hideFromWeb:null, url:"" },
-      { id:"yatco-nj", label:"Yatco (N&J)",       isBrandWebsite:false, status:"not-published", cobrok:"no",  request:"—", approval:"—", requestedBy:"—", requestedAt:"—", lastUpdatedBy:"—", lastUpdatedAt:"—", showAsSold:null, hideFromWeb:null, url:"" },
-      { id:"nw",       label:"N&J website",        isBrandWebsite:true,  status:"not-published", cobrok:"n/a", request:"—", approval:"—", requestedBy:"—", requestedAt:"—", lastUpdatedBy:"—", lastUpdatedAt:"—", showAsSold:null, hideFromWeb:null, url:"" },
+      { id:"yw-nj-2",    label:"Yachtworld (N&J)", isBrandWebsite:false, status:"not-published", cobrok:"no",  request:"—", approval:"—", requestedBy:"—", requestedAt:"—", lastUpdatedBy:"—", lastUpdatedAt:"—", showAsSold:null, hideFromWeb:null, url:"", errorMsg:null },
+      { id:"yatco-nj-2", label:"Yatco (N&J)",       isBrandWebsite:false, status:"not-published", cobrok:"no",  request:"—", approval:"—", requestedBy:"—", requestedAt:"—", lastUpdatedBy:"—", lastUpdatedAt:"—", showAsSold:null, hideFromWeb:null, url:"", errorMsg:null },
+      { id:"nw-2",       label:"N&J website",        isBrandWebsite:true,  status:"not-published", cobrok:"n/a", request:"—", approval:"—", requestedBy:"—", requestedAt:"—", lastUpdatedBy:"—", lastUpdatedAt:"—", showAsSold:null, hideFromWeb:null, url:"", errorMsg:null },
     ]},
   { id:3, name:"Silver Moon", loa:"63m", year:2021, brand:"fraser", type:"sales", broker:"Carlos Medina", brokerage:"Fraser Yachts", builder:"Benetti", updatedBy:"R. Torres", updatedAt:"May 10, 2026",
     endpoints:[
-      { id:"yw-f",    label:"Yachtworld (Fraser)", isBrandWebsite:false, status:"published",   cobrok:"yes", request:"—",                   approval:"Request approved", requestedBy:"C. Medina", requestedAt:"May 2, 2026",  lastUpdatedBy:"R. Torres", lastUpdatedAt:"May 10, 2026", showAsSold:null, hideFromWeb:null, url:"https://yachtworld.com/456" },
-      { id:"yatco-f", label:"Yatco (Fraser)",       isBrandWebsite:false, status:"error",       cobrok:"no",  request:"Unpublish requested", approval:"Request approved", requestedBy:"C. Medina", requestedAt:"May 9, 2026",  lastUpdatedBy:"R. Torres", lastUpdatedAt:"May 10, 2026", showAsSold:"yes", hideFromWeb:"no",  url:"" },
-      { id:"fw",      label:"Fraser website",        isBrandWebsite:true,  status:"published",   cobrok:"n/a", request:"—",                   approval:"Request approved", requestedBy:"C. Medina", requestedAt:"May 2, 2026",  lastUpdatedBy:"R. Torres", lastUpdatedAt:"May 10, 2026", showAsSold:null, hideFromWeb:null, url:"https://fraser.com/silver-moon" },
+      { id:"yw-f-3",    label:"Yachtworld (Fraser)", isBrandWebsite:false, status:"published",   cobrok:"yes", request:"—",                   approval:"Request approved", requestedBy:"C. Medina", requestedAt:"May 2, 2026",  lastUpdatedBy:"R. Torres", lastUpdatedAt:"May 10, 2026", showAsSold:null, hideFromWeb:null, url:"https://yachtworld.com/456", errorMsg:null },
+      { id:"yatco-f-3", label:"Yatco (Fraser)",       isBrandWebsite:false, status:"error",       cobrok:"no",  request:"Unpublish requested", approval:"Request approved", requestedBy:"C. Medina", requestedAt:"May 9, 2026",  lastUpdatedBy:"R. Torres", lastUpdatedAt:"May 10, 2026", showAsSold:"yes", hideFromWeb:"no",  url:"",                          errorMsg:"Validation error — listing rejected by Yatco: missing required field 'Gross Tonnage'. Update the yacht record and retry." },
+      { id:"fw-3",      label:"Fraser website",        isBrandWebsite:true,  status:"error",       cobrok:"n/a", request:"Unpublish requested", approval:"Request approved", requestedBy:"C. Medina", requestedAt:"May 9, 2026",  lastUpdatedBy:"R. Torres", lastUpdatedAt:"May 10, 2026", showAsSold:"yes", hideFromWeb:"no",  url:"",                          errorMsg:"Duplicate listing detected — a listing with the same IMO number already exists on the Fraser website. Contact the data team to resolve." },
     ]},
   { id:4, name:"Blue Horizon", loa:"38m", year:2012, brand:"nj", type:"charter", broker:"Anna Kowalski", brokerage:"N&J Management", builder:"Heesen", updatedBy:"A. Kowalski", updatedAt:"May 14, 2026",
     endpoints:[
-      { id:"yw-nj",    label:"Yachtworld (N&J)", isBrandWebsite:false, status:"pending",      cobrok:"yes", request:"Publish requested", approval:"Pending approval", requestedBy:"A. Kowalski", requestedAt:"May 14, 2026", lastUpdatedBy:"A. Kowalski", lastUpdatedAt:"May 14, 2026", showAsSold:null, hideFromWeb:null, url:"" },
-      { id:"yatco-nj", label:"Yatco (N&J)",       isBrandWebsite:false, status:"not-published", cobrok:"no",  request:"—",                 approval:"—",               requestedBy:"—",           requestedAt:"—",            lastUpdatedBy:"—",           lastUpdatedAt:"—",            showAsSold:null, hideFromWeb:null, url:"" },
-      { id:"nw",       label:"N&J website",        isBrandWebsite:true,  status:"pending",      cobrok:"n/a", request:"Publish requested", approval:"Pending approval", requestedBy:"A. Kowalski", requestedAt:"May 14, 2026", lastUpdatedBy:"A. Kowalski", lastUpdatedAt:"May 14, 2026", showAsSold:null, hideFromWeb:null, url:"" },
+      { id:"yw-nj-4",    label:"Yachtworld (N&J)", isBrandWebsite:false, status:"pending",      cobrok:"yes", request:"Publish requested", approval:"Pending approval", requestedBy:"A. Kowalski", requestedAt:"May 14, 2026", lastUpdatedBy:"A. Kowalski", lastUpdatedAt:"May 14, 2026", showAsSold:null, hideFromWeb:null, url:"", errorMsg:null },
+      { id:"yatco-nj-4", label:"Yatco (N&J)",       isBrandWebsite:false, status:"not-published", cobrok:"no",  request:"—",                 approval:"—",               requestedBy:"—",           requestedAt:"—",            lastUpdatedBy:"—",           lastUpdatedAt:"—",            showAsSold:null, hideFromWeb:null, url:"", errorMsg:null },
+      { id:"nw-4",       label:"N&J website",        isBrandWebsite:true,  status:"pending",      cobrok:"n/a", request:"Publish requested", approval:"Pending approval", requestedBy:"A. Kowalski", requestedAt:"May 14, 2026", lastUpdatedBy:"A. Kowalski", lastUpdatedAt:"May 14, 2026", showAsSold:null, hideFromWeb:null, url:"", errorMsg:null },
     ]},
-  { id:5, name:"Serenity Now", loa:"55m", year:2019, brand:"fraser", type:"sales", broker:"James Harrington", brokerage:"Fraser Yachts", builder:"Feadship", updatedBy:"—", updatedAt:"—",
+  { id:5, name:"Serenity Now", loa:"55m", year:2019, brand:"fraser", type:"sales", broker:"James Harrington", brokerage:"Fraser Yachts", builder:"Feadship", updatedBy:"R. Torres", updatedAt:"May 15, 2026",
     endpoints:[
-      { id:"yw-f",    label:"Yachtworld (Fraser)", isBrandWebsite:false, status:"not-published", cobrok:"no",  request:"—", approval:"—", requestedBy:"—", requestedAt:"—", lastUpdatedBy:"—", lastUpdatedAt:"—", showAsSold:null, hideFromWeb:null, url:"" },
-      { id:"yatco-f", label:"Yatco (Fraser)",       isBrandWebsite:false, status:"not-published", cobrok:"no",  request:"—", approval:"—", requestedBy:"—", requestedAt:"—", lastUpdatedBy:"—", lastUpdatedAt:"—", showAsSold:null, hideFromWeb:null, url:"" },
-      { id:"fw",      label:"Fraser website",        isBrandWebsite:true,  status:"not-published", cobrok:"n/a", request:"—", approval:"—", requestedBy:"—", requestedAt:"—", lastUpdatedBy:"—", lastUpdatedAt:"—", showAsSold:null, hideFromWeb:null, url:"" },
+      { id:"yw-f-5",    label:"Yachtworld (Fraser)", isBrandWebsite:false, status:"error",        cobrok:"yes", request:"Publish requested", approval:"Request approved", requestedBy:"J. Harrington", requestedAt:"May 14, 2026", lastUpdatedBy:"R. Torres", lastUpdatedAt:"May 15, 2026", showAsSold:null, hideFromWeb:null, url:"", errorMsg:"Authentication failure — Yachtworld API key expired or revoked. Contact the data team to refresh credentials before retrying." },
+      { id:"yatco-f-5", label:"Yatco (Fraser)",       isBrandWebsite:false, status:"error",        cobrok:"yes", request:"Publish requested", approval:"Request approved", requestedBy:"J. Harrington", requestedAt:"May 14, 2026", lastUpdatedBy:"R. Torres", lastUpdatedAt:"May 15, 2026", showAsSold:null, hideFromWeb:null, url:"", errorMsg:"Authentication failure — same API credentials issue affecting Yatco (Fraser). Retry once credentials are updated." },
+      { id:"fw-5",      label:"Fraser website",        isBrandWebsite:true,  status:"published",    cobrok:"n/a", request:"—",                 approval:"Request approved", requestedBy:"J. Harrington", requestedAt:"May 10, 2026", lastUpdatedBy:"R. Torres", lastUpdatedAt:"May 15, 2026", showAsSold:null, hideFromWeb:null, url:"https://fraser.com/serenity-now", errorMsg:null },
     ]},
   { id:6, name:"Tidal Wave", loa:"41m", year:2016, brand:"nj", type:"charter", broker:"Marco Visser", brokerage:"N&J Management", builder:"Amels", updatedBy:"L. Petit", updatedAt:"May 7, 2026",
     endpoints:[
-      { id:"yw-nj",    label:"Yachtworld (N&J)", isBrandWebsite:false, status:"published",   cobrok:"yes", request:"—", approval:"Request approved", requestedBy:"M. Visser", requestedAt:"Apr 28, 2026", lastUpdatedBy:"L. Petit", lastUpdatedAt:"May 7, 2026", showAsSold:null, hideFromWeb:null, url:"https://yachtworld.com/789" },
-      { id:"yatco-nj", label:"Yatco (N&J)",       isBrandWebsite:false, status:"unpublished", cobrok:"yes", request:"—", approval:"Request approved", requestedBy:"M. Visser", requestedAt:"Apr 28, 2026", lastUpdatedBy:"L. Petit", lastUpdatedAt:"May 7, 2026", showAsSold:null, hideFromWeb:null, url:"" },
-      { id:"nw",       label:"N&J website",        isBrandWebsite:true,  status:"published",   cobrok:"n/a", request:"—", approval:"Request approved", requestedBy:"M. Visser", requestedAt:"Apr 28, 2026", lastUpdatedBy:"L. Petit", lastUpdatedAt:"May 7, 2026", showAsSold:null, hideFromWeb:null, url:"https://njmanagement.com/tidal-wave" },
+      { id:"yw-nj-6",    label:"Yachtworld (N&J)", isBrandWebsite:false, status:"published",   cobrok:"yes", request:"—", approval:"Request approved", requestedBy:"M. Visser", requestedAt:"Apr 28, 2026", lastUpdatedBy:"L. Petit", lastUpdatedAt:"May 7, 2026", showAsSold:null, hideFromWeb:null, url:"https://yachtworld.com/789", errorMsg:null },
+      { id:"yatco-nj-6", label:"Yatco (N&J)",       isBrandWebsite:false, status:"unpublished", cobrok:"yes", request:"—", approval:"Request approved", requestedBy:"M. Visser", requestedAt:"Apr 28, 2026", lastUpdatedBy:"L. Petit", lastUpdatedAt:"May 7, 2026", showAsSold:null, hideFromWeb:null, url:"",                          errorMsg:null },
+      { id:"nw-6",       label:"N&J website",        isBrandWebsite:true,  status:"published",   cobrok:"n/a", request:"—", approval:"Request approved", requestedBy:"M. Visser", requestedAt:"Apr 28, 2026", lastUpdatedBy:"L. Petit", lastUpdatedAt:"May 7, 2026", showAsSold:null, hideFromWeb:null, url:"https://njmanagement.com/tidal-wave", errorMsg:null },
     ]},
 ];
 
@@ -676,17 +718,20 @@ function renderTable() {
     tbody.innerHTML = `<tr class="empty-row"><td colspan="7">No yachts match the current filters.</td></tr>`;
     renderStats(rows); return;
   }
-  tbody.innerHTML = rows.map(y => `
+  tbody.innerHTML = rows.map(y => {
+    const hasError = y.endpoints.some(e => e.status === "error");
+    const retryBadge = hasError ? `<span class="ep-badge ep-error" style="margin-left:4px" title="One or more marketplaces have a publishing error"><i class="ti ti-alert-triangle"></i>Error</span>` : "";
+    return `
     <tr>
       <td><div class="yacht-name">${y.name}</div><div class="yacht-meta">${y.loa} · ${y.year}</div></td>
-      <td><div>${y.broker}</div><span class="brand-badge brand-${y.brand}">${y.brand === "fraser" ? "Fraser" : "N&J"}</span></td>
-      <td style="color:var(--text-secondary);font-size:var(--fs-14)">${y.brokerage}</td>
+      <td><div>${y.broker}</div><div class="yacht-meta">${y.brokerage}</div><span class="brand-badge brand-${y.brand}">${y.brand === "fraser" ? "Fraser" : "N&J"}</span></td>
+      <td class="c-brokerage-cell"></td>
       <td style="color:var(--text-secondary);font-size:var(--fs-14)">${y.builder}</td>
       <td><div class="ep-cell">${y.endpoints.map(epBadge).join("")}</div></td>
       <td><div class="updated-by">${y.updatedBy}</div><div class="updated-at">${y.updatedAt}</div></td>
-      <td><button class="manage-btn" onclick="openDrawer(${y.id})"><i class="ti ti-settings" aria-hidden="true"></i> Manage</button></td>
+      <td style="white-space:nowrap"><button class="manage-btn" onclick="openDrawer(${y.id})"><i class="ti ti-settings" aria-hidden="true"></i> Manage</button>${retryBadge}</td>
     </tr>
-  `).join("");
+  `}).join("");
   renderStats(rows);
 }
 
@@ -729,12 +774,29 @@ function openDrawer(id) {
     const urlRow = ep.url
       ? `<div class="listing-link"><i class="ti ti-external-link"></i><a href="${ep.url}" target="_blank">View listing</a></div>`
       : `<div class="listing-link"><i class="ti ti-link"></i><span style="color:var(--text-muted)">URL auto-populated after publish confirmation</span></div>`;
+
+    const errorBanner = ep.status === "error" ? (() => {
+      const canRetry = r.canRequest;
+      const msg = ep.errorMsg || "An unknown error occurred while publishing to this marketplace.";
+      const retryBtn = canRetry
+        ? `<button class="retry-btn" id="retry-${ep.id}" onclick="handleRetry('${ep.id}', this)"><i class="ti ti-refresh"></i> Retry publishing</button>`
+        : `<div class="retry-locked-note"><i class="ti ti-lock"></i>Retry not available for ${r.label}</div>`;
+      return `<div class="ep-error-banner">
+        <i class="ti ti-alert-circle"></i>
+        <div class="ep-error-banner-body">
+          <div class="ep-error-banner-title">Publishing failed</div>
+          <div class="ep-error-banner-msg">${msg}</div>
+          ${retryBtn}
+        </div>
+      </div>`;
+    })() : "";
     return `
-      <div class="ep-row">
+      <div class="ep-row${ep.status === "error" ? " ep-row-error" : ""}">
         <div class="ep-row-header">
           <span class="ep-row-name">${ep.label}</span>
           <span class="ep-badge ${stMap[ep.status]}"><i class="ti ${stIco[ep.status]}"></i>${stLbl[ep.status]}</span>
         </div>
+        ${errorBanner}
         <div class="ep-fields">
           <div class="field-group"><label>Request</label>${requestSelect}</div>
           <div class="field-group"><label>Approval status</label>${approvalSelect}</div>
@@ -800,6 +862,31 @@ document.querySelectorAll("th[data-col]").forEach(th => {
     renderTable();
   });
 });
+
+function handleRetry(epId, btn) {
+  if (btn.disabled) return;
+  btn.disabled = true;
+  btn.classList.add("retrying");
+  btn.innerHTML = `<i class="ti ti-loader-2" style="animation:spin .8s linear infinite"></i> Retrying…`;
+
+  // Simulate async retry: after 2s update the status to pending-approval
+  setTimeout(() => {
+    // Update data
+    YACHTS.forEach(y => {
+      y.endpoints.forEach(ep => {
+        if (ep.id === epId && ep.status === "error") {
+          ep.status = "pending-approval";
+          ep.request = "Publish requested";
+          ep.approval = "Pending approval";
+        }
+      });
+    });
+    // Re-render table and re-open drawer for same yacht
+    const yacht = YACHTS.find(y => y.endpoints.some(e => e.id === epId));
+    renderTable();
+    if (yacht) openDrawer(yacht.id);
+  }, 2000);
+}
 
 buildDynamicFilters();
 renderTable();
