@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EK Test List — YachtIQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+/* ── YachtIQ Design Tokens ── */
+:root {
+  --bg-base:        #fcfbf8;
+  --bg-soft:        #f5f1ec;
+  --bg-card:        #ffffff;
+  --text-primary:   #1b1b1b;
+  --text-secondary: #6a615b;
+  --text-muted:     #c5c1b9;
+  --orange:         #fe7b02;
+  --orange-gold:    #c39553;
+  --orange-dark:    #392a1e;
+  --orange-10:      #221811;
+  --orange-42:      #906847;
+  --orange-86:      #e2ddd7;
+  --orange-89:      #e9e4de;
+  --border:         #c5c1b9;
+  --border-soft:    #e9e4de;
+  --green:          #2b9667;
+  --green-bg:       #2b966726;
+  --red:            #d73337;
+  --red-bg:         #d7333766;
+  --blue:           #575ecf;
+  --sp-4:4px; --sp-6:6px; --sp-7:7px; --sp-8:8px;
+  --sp-9:9px; --sp-12:12px; --sp-15:15px; --sp-24:24px; --sp-40:40px;
+  --font: 'DM Sans', sans-serif;
+  --fs-10:10px; --fs-11:11px; --fs-14:14px;
+  --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-pill:999px;
+  --sidebar-w: 220px;
+  --sidebar-rail: 48px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  font-size: var(--fs-14);
+  color: var(--text-primary);
+  background: var(--bg-soft);
+  line-height: 20px;
+  min-height: 100vh;
+  display: flex;
+}
+
+a { color: var(--blue); text-decoration: none; }
+button, select, input { font-family: var(--font); cursor: pointer; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border-soft);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  overflow-y: auto;
+  transition: width .2s;
+}
+
+.sidebar-logo {
+  padding: var(--sp-24) var(--sp-15) var(--sp-15);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.98px;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.sidebar-logo span { color: var(--orange-gold); font-weight: 300; }
+
+.nav-group-label {
+  font-size: var(--fs-10);
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.98px;
+  padding: var(--sp-15) var(--sp-15) var(--sp-6);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-9);
+  padding: var(--sp-9) var(--sp-15);
+  font-size: var(--fs-14);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all .12s;
+  border-left: 2px solid transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-decoration: none;
+}
+.nav-item i { font-size: 18px; flex-shrink: 0; }
+.nav-item:hover { color: var(--text-primary); background: var(--bg-soft); }
+.nav-item.active {
+  color: var(--text-primary);
+  font-weight: 500;
+  border-left-color: var(--orange);
+  background: var(--bg-soft);
+}
+.nav-label { overflow: hidden; text-overflow: ellipsis; }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: var(--sp-15);
+  border-top: 1px solid var(--border-soft);
+}
+.user-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-9);
+  overflow: hidden;
+}
+.user-avatar {
+  width: 32px; height: 32px; flex-shrink: 0;
+  background: var(--orange-gold);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: var(--fs-11);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.user-name { font-size: var(--fs-14); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-role { font-size: var(--fs-10); color: var(--text-muted); letter-spacing: 0.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── MAIN CONTENT ── */
+.main-wrap {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-soft);
+  padding: 0 var(--sp-24);
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-12);
+  position: sticky;
+  top: 0;
+  z-index: 80;
+}
+
+.search-wrap {
+  position: relative;
+  flex: 1;
+  max-width: 320px;
+}
+.search-wrap i {
+  position: absolute;
+  left: 10px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 15px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.search-wrap input {
+  width: 100%;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 0 var(--sp-12) 0 32px;
+  font-family: var(--font);
+  font-size: var(--fs-14);
+  color: var(--text-primary);
+  background: var(--bg-soft);
+  outline: none;
+  transition: border-color .15s;
+}
+.search-wrap input:focus { border-color: var(--text-secondary); background: var(--bg-card); }
+.search-wrap input::placeholder { color: var(--text-muted); }
+
+.btn-filter-top {
+  height: 34px;
+  background: var(--orange-10);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-md);
+  padding: 0 var(--sp-15);
+  font-family: var(--font);
+  font-size: var(--fs-14);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+  transition: background .15s;
+}
+.btn-filter-top:hover { background: var(--orange); }
+
+.btn-outline-sm {
+  height: 34px;
+  background: none;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 0 var(--sp-12);
+  font-family: var(--font);
+  font-size: var(--fs-11);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+  transition: all .12s;
+}
+.btn-outline-sm:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+
+.tb-spacer { flex: 1; }
+
+/* ── PAGE ── */
+.page {
+  padding: var(--sp-40) var(--sp-24);
+  max-width: 1152px;
+  width: 100%;
+}
+
+/* ── BREADCRUMB ── */
+.breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-4);
+  font-size: var(--fs-11);
+  color: var(--text-secondary);
+  margin-bottom: var(--sp-7);
+  cursor: pointer;
+  transition: color .12s;
+  letter-spacing: 0.5px;
+}
+.breadcrumb:hover { color: var(--orange); }
+
+/* ── LIST HEADER ── */
+.list-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-15);
+  margin-bottom: var(--sp-24);
+  flex-wrap: wrap;
+}
+.list-header-left { display: flex; flex-direction: column; gap: var(--sp-6); }
+.list-title-row { display: flex; align-items: center; gap: var(--sp-12); flex-wrap: wrap; }
+.list-title {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+  line-height: 28px;
+  color: var(--text-primary);
+}
+.results-label {
+  font-size: var(--fs-11);
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+}
+
+.icon-btn {
+  width: 30px; height: 30px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: none;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-secondary);
+  font-size: 15px;
+  transition: all .12s;
+}
+.icon-btn:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+
+.toggle-switch {
+  width: 34px; height: 18px;
+  background: var(--orange);
+  border-radius: var(--r-pill);
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  width: 12px; height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  top: 3px; right: 3px;
+  transition: transform .18s;
+}
+
+/* ── LIST ACTIONS ROW ── */
+.list-actions-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-9);
+  flex-wrap: wrap;
+}
+
+.btn-remove {
+  height: 34px;
+  border: 1px solid var(--red);
+  color: var(--red);
+  background: var(--bg-card);
+  border-radius: var(--r-md);
+  padding: 0 var(--sp-12);
+  font-family: var(--font);
+  font-size: var(--fs-11);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+  transition: all .12s;
+}
+.btn-remove:hover { background: var(--red-bg); }
+
+.list-name-select {
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 0 28px 0 var(--sp-12);
+  font-family: var(--font);
+  font-size: var(--fs-14);
+  color: var(--text-primary);
+  background: var(--bg-card);
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236a615b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  cursor: pointer;
+  min-width: 130px;
+}
+
+.view-btn {
+  width: 36px; height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--bg-card);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-secondary);
+  font-size: 16px;
+  transition: all .15s;
+  box-shadow: 0 1px 3px rgba(27,27,27,.05);
+}
+.view-btn i { color: var(--text-secondary) !important; transition: color .15s; }
+.view-btn:hover {
+  border-color: var(--text-secondary);
+  background: var(--bg-soft);
+  color: var(--text-primary);
+  box-shadow: 0 2px 6px rgba(27,27,27,.08);
+}
+.view-btn:hover i { color: var(--text-primary) !important; }
+.view-btn.active {
+  background: var(--bg-soft);
+  border-color: var(--border);
+  color: var(--text-primary);
+  box-shadow: inset 0 1px 2px rgba(27,27,27,.06);
+}
+.view-btn.active i { color: var(--text-primary) !important; }
+
+/* ── DOTS MENU ── */
+.dots-wrap { position: relative; }
+.btn-dots {
+  width: 36px; height: 36px;
+  border-radius: var(--r-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px;
+  transition: all .15s;
+  box-shadow: 0 1px 3px rgba(27,27,27,.05);
+}
+.btn-dots i { color: var(--text-secondary) !important; transition: color .15s; }
+.btn-dots:hover {
+  border-color: var(--text-secondary);
+  background: var(--bg-soft);
+  box-shadow: 0 2px 6px rgba(27,27,27,.08);
+}
+.btn-dots:hover i { color: var(--text-primary) !important; }
+.btn-dots.open {
+  border-color: var(--orange-gold);
+  background: var(--bg-soft);
+  box-shadow: 0 2px 6px rgba(27,27,27,.08);
+}
+.btn-dots.open i { color: var(--orange-gold) !important; }
+
+.dots-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-xl);
+  min-width: 210px;
+  overflow: hidden;
+  display: none;
+  z-index: 200;
+  box-shadow: 0 8px 32px rgba(27,27,27,.12);
+  animation: dropIn .12s ease;
+}
+.dots-menu.open { display: block; }
+
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.menu-section { padding: var(--sp-6) 0; border-bottom: 1px solid var(--border-soft); }
+.menu-section:last-child { border-bottom: none; }
+.menu-section-label {
+  font-size: var(--fs-10);
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.98px;
+  padding: var(--sp-6) var(--sp-15) var(--sp-4);
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-9);
+  padding: var(--sp-9) var(--sp-15);
+  font-size: var(--fs-14);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background .1s;
+  white-space: nowrap;
+}
+.menu-item:hover { background: var(--bg-soft); }
+.menu-item i { font-size: 16px; color: var(--text-secondary); }
+.menu-item.danger { color: var(--red); }
+.menu-item.danger i { color: var(--red); }
+.menu-item.danger:hover { background: var(--red-bg); }
+
+/* ── YACHT GRID ── */
+.yacht-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--sp-15);
+}
+
+.yacht-card {
+  background: var(--bg-card);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  transition: box-shadow .18s, transform .18s, border-color .18s;
+  cursor: pointer;
+}
+.yacht-card:hover {
+  box-shadow: 0 4px 20px rgba(27,27,27,.09);
+  transform: translateY(-2px);
+}
+.yacht-card.selected {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 2px rgba(254,123,2,.15);
+}
+
+.card-img-wrap {
+  position: relative;
+  height: 196px;
+  overflow: hidden;
+}
+.card-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .4s;
+}
+.yacht-card:hover .card-img-wrap img { transform: scale(1.04); }
+
+.card-tag {
+  position: absolute;
+  top: var(--sp-12); right: var(--sp-12);
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: var(--r-pill);
+  padding: 2px var(--sp-9);
+  font-size: var(--fs-10);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(4px);
+  color: var(--text-primary);
+}
+
+.card-select-check {
+  position: absolute;
+  top: var(--sp-12); left: var(--sp-12);
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.7);
+  background: rgba(255,255,255,.15);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  color: transparent;
+  transition: all .15s;
+}
+.yacht-card.selected .card-select-check {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: #fff;
+}
+
+.card-body { padding: var(--sp-15) var(--sp-15) var(--sp-15); }
+
+.card-name {
+  font-size: var(--fs-14);
+  font-weight: 700;
+  letter-spacing: 1.98px;
+  text-transform: uppercase;
+  color: var(--orange-gold);
+  margin-bottom: var(--sp-12);
+  line-height: 20px;
+}
+
+.card-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-6);
+  padding: var(--sp-6) 0;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: var(--fs-14);
+}
+.card-row:last-of-type { border-bottom: none; }
+.card-row-label {
+  color: var(--text-muted);
+  min-width: 72px;
+  font-size: var(--fs-11);
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+.card-row-val { font-weight: 500; color: var(--text-primary); }
+.card-row-extra { margin-left: auto; font-size: var(--fs-11); color: var(--text-secondary); }
+
+.card-edit-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+  padding: var(--sp-7) 0;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: var(--fs-11);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color .12s;
+}
+.card-edit-row:last-child { border-bottom: none; }
+.card-edit-row:hover { color: var(--orange); }
+.card-edit-row i { font-size: 12px; }
+
+/* ── COMPARE VIEW ── */
+#compareView { display: none; }
+#compareView.active { display: block; }
+#listView.hidden { display: none; }
+#fraserView { display: none; }
+#fraserView.active { display: block; }
+
+.compare-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-4);
+  font-size: var(--fs-11);
+  color: var(--text-secondary);
+  cursor: pointer;
+  margin-bottom: var(--sp-7);
+  transition: color .12s;
+  letter-spacing: 0.5px;
+}
+.compare-back:hover { color: var(--orange); }
+
+.compare-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-15);
+  margin-bottom: var(--sp-24);
+  flex-wrap: wrap;
+}
+.compare-title {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+  line-height: 28px;
+}
+.compare-subtitle {
+  font-size: var(--fs-11);
+  color: var(--text-secondary);
+  margin-top: 3px;
+  letter-spacing: 0.5px;
+}
+.compare-actions { display: flex; gap: var(--sp-9); flex-wrap: wrap; }
+
+.btn-primary {
+  height: 34px;
+  background: var(--orange-10);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-md);
+  padding: 0 var(--sp-15);
+  font-family: var(--font);
+  font-size: var(--fs-14);
+  font-weight: 500;
+  display: flex; align-items: center; gap: var(--sp-6);
+  transition: background .12s;
+}
+.btn-primary:hover { background: var(--orange); }
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--sp-15);
+}
+
+.compare-card {
+  background: var(--bg-card);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+}
+
+.compare-card-img {
+  height: 168px;
+  position: relative;
+  overflow: hidden;
+}
+.compare-card-img img { width: 100%; height: 100%; object-fit: cover; }
+
+.compare-card-body { padding: var(--sp-12) var(--sp-15) var(--sp-15); }
+
+.compare-card-name {
+  font-size: var(--fs-11);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.98px;
+  color: var(--orange-gold);
+  margin-bottom: var(--sp-9);
+  line-height: 16px;
+}
+
+.cmp-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-6);
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: var(--fs-11);
+}
+.cmp-row:last-child { border-bottom: none; }
+.cmp-lbl { color: var(--text-muted); min-width: 56px; flex-shrink: 0; letter-spacing: 0.5px; }
+.cmp-val { font-weight: 500; color: var(--text-primary); }
+
+/* ── MODAL: Create Comparison ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(27,27,27,.4);
+  backdrop-filter: blur(3px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 900;
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-xl);
+  padding: var(--sp-24);
+  width: 440px;
+  max-width: 94vw;
+  box-shadow: 0 12px 48px rgba(27,27,27,.14);
+  position: relative;
+  animation: slideUp .18s ease;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-close {
+  position: absolute;
+  top: var(--sp-15); right: var(--sp-15);
+  width: 28px; height: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: none;
+  font-size: 14px;
+  color: var(--text-secondary);
+  display: flex; align-items: center; justify-content: center;
+  transition: all .12s;
+}
+.modal-close:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+  margin-bottom: var(--sp-24);
+}
+
+.form-group { margin-bottom: var(--sp-15); }
+.form-label {
+  font-size: var(--fs-10);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.98px;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: var(--sp-6);
+}
+.form-select {
+  width: 100%;
+  height: 38px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 0 28px 0 var(--sp-12);
+  font-family: var(--font);
+  font-size: var(--fs-14);
+  color: var(--text-primary);
+  background: var(--bg-card);
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236a615b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  transition: border-color .15s;
+}
+.form-select:focus { border-color: var(--text-secondary); }
+
+.modal-actions {
+  display: flex;
+  gap: var(--sp-9);
+  margin-top: var(--sp-24);
+  padding-top: var(--sp-15);
+  border-top: 1px solid var(--border-soft);
+}
+.btn-cancel-modal {
+  flex: 1;
+  height: 38px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: none;
+  font-family: var(--font);
+  font-size: var(--fs-14);
+  color: var(--text-secondary);
+  transition: all .12s;
+}
+.btn-cancel-modal:hover { background: var(--bg-soft); }
+.btn-create {
+  flex: 1;
+  height: 38px;
+  border: none;
+  border-radius: var(--r-md);
+  background: var(--orange-10);
+  color: #fff;
+  font-family: var(--font);
+  font-size: var(--fs-14);
+  font-weight: 500;
+  transition: background .12s;
+}
+.btn-create:hover { background: var(--orange); }
+
+/* ── FRASER / CLIENT OUTPUT VIEW ── */
+.fraser-broker-bar {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-soft);
+  padding: 0 var(--sp-24);
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-12);
+  position: sticky;
+  top: 52px;
+  z-index: 70;
+}
+.fraser-broker-back {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+  font-size: var(--fs-14);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-weight: 500;
+  transition: color .12s;
+  flex-shrink: 0;
+}
+.fraser-broker-back:hover { color: var(--orange); }
+.fraser-broker-note {
+  font-size: var(--fs-11);
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+}
+.fraser-broker-note strong { color: var(--text-primary); }
+
+.fraser-view-tabs {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+.fraser-tab {
+  height: 28px;
+  padding: 0 var(--sp-12);
+  border-radius: var(--r-md);
+  font-size: var(--fs-11);
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all .12s;
+  background: none;
+  font-family: var(--font);
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+}
+.fraser-tab.active {
+  border-color: var(--border);
+  color: var(--orange);
+  background: var(--bg-soft);
+  font-weight: 500;
+}
+.fraser-tab:not(.active):hover { color: var(--text-primary); }
+
+.btn-copy-link {
+  height: 28px;
+  padding: 0 var(--sp-12);
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-md);
+  font-family: var(--font);
+  font-size: var(--fs-11);
+  font-weight: 500;
+  display: flex; align-items: center; gap: var(--sp-6);
+  transition: opacity .12s;
+  letter-spacing: 0.5px;
+}
+.btn-copy-link:hover { opacity: .85; }
+
+/* fraser output document */
+.fraser-doc {
+  max-width: 700px;
+  margin: var(--sp-40) auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(27,27,27,.07);
+}
+
+.fraser-topbar {
+  background: var(--orange-10);
+  color: var(--orange-gold);
+  text-align: center;
+  padding: var(--sp-15);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.98px;
+  text-transform: uppercase;
+}
+
+.fraser-alert {
+  background: var(--orange-89);
+  color: var(--text-secondary);
+  text-align: center;
+  padding: var(--sp-7) var(--sp-12);
+  font-size: var(--fs-11);
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.fraser-alert strong { color: var(--text-primary); font-weight: 500; }
+
+.fraser-hero {
+  position: relative;
+  height: 260px;
+  overflow: hidden;
+}
+.fraser-hero img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: brightness(0.6);
+}
+.fraser-hero-text {
+  position: absolute;
+  inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  color: #fff;
+  padding: var(--sp-24);
+}
+.fraser-eyebrow {
+  font-size: var(--fs-10);
+  letter-spacing: 1.98px;
+  text-transform: uppercase;
+  margin-bottom: var(--sp-9);
+  opacity: 0.8;
+}
+.fraser-hero-title {
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.6px;
+  line-height: 32px;
+  margin-bottom: var(--sp-9);
+}
+.fraser-hero-sub {
+  font-size: var(--fs-10);
+  opacity: 0.7;
+  letter-spacing: 1.98px;
+  text-transform: uppercase;
+}
+
+.fraser-section {
+  padding: var(--sp-24) var(--sp-40);
+  text-align: center;
+  border-bottom: 1px solid var(--border-soft);
+}
+.fraser-section-title {
+  font-size: var(--fs-14);
+  font-weight: 700;
+  letter-spacing: 1.98px;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-9);
+}
+.fraser-divider {
+  width: 32px; height: 1px;
+  background: var(--orange-gold);
+  margin: 0 auto var(--sp-12);
+}
+.fraser-intro-text {
+  font-size: var(--fs-11);
+  color: var(--text-secondary);
+  line-height: 20px;
+  max-width: 480px;
+  margin: 0 auto;
+  letter-spacing: 0.5px;
+}
+
+.fraser-banner {
+  background: var(--orange-10);
+  text-align: center;
+  padding: var(--sp-24) var(--sp-40);
+  border-top: 1px solid rgba(255,255,255,.04);
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.fraser-banner p {
+  font-size: var(--fs-10);
+  color: var(--orange-gold);
+  letter-spacing: 1.98px;
+  text-transform: uppercase;
+  margin-bottom: var(--sp-4);
+  opacity: 0.6;
+}
+.fraser-banner h3 {
+  font-size: var(--fs-14);
+  font-weight: 700;
+  letter-spacing: 1.98px;
+  color: var(--orange-gold);
+  text-transform: uppercase;
+}
+
+.fraser-yachts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.fraser-yacht-item {
+  border: 1px solid var(--border-soft);
+  overflow: hidden;
+}
+.fraser-yacht-img {
+  height: 180px; position: relative;
+}
+.fraser-yacht-img img { width: 100%; height: 100%; object-fit: cover; }
+.fraser-yacht-check {
+  position: absolute;
+  top: var(--sp-9); right: var(--sp-9);
+  width: 22px; height: 22px;
+  background: var(--orange);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  color: #fff;
+}
+.fraser-yacht-info {
+  padding: var(--sp-12) var(--sp-15);
+  text-align: center;
+  background: var(--bg-card);
+}
+.fraser-yacht-name {
+  font-size: var(--fs-10);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.98px;
+  color: var(--orange-gold);
+  margin-bottom: var(--sp-7);
+}
+.fraser-specs {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-15);
+  margin-bottom: var(--sp-7);
+}
+.fraser-spec { text-align: center; }
+.fraser-spec-val {
+  font-size: var(--fs-14);
+  font-weight: 500;
+  color: var(--text-primary);
+  display: block;
+}
+.fraser-spec-lbl {
+  font-size: var(--fs-10);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.fraser-price-row {
+  font-size: var(--fs-11);
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+}
+.fraser-price-row strong { color: var(--text-primary); font-weight: 500; }
+
+.fraser-back-wrap {
+  padding: var(--sp-24);
+  text-align: center;
+  border-top: 1px solid var(--border-soft);
+}
+.fraser-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-6);
+  padding: var(--sp-9) var(--sp-24);
+  background: var(--orange-10);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-md);
+  font-family: var(--font);
+  font-size: var(--fs-14);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .12s;
+}
+.fraser-back-btn:hover { background: var(--orange); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: var(--sp-24); right: var(--sp-24);
+  background: var(--orange-10);
+  color: #fff;
+  border-radius: var(--r-lg);
+  padding: var(--sp-9) var(--sp-15);
+  font-size: var(--fs-14);
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(27,27,27,.18);
+  z-index: 999;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all .22s;
+  pointer-events: none;
+  letter-spacing: 0.5px;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+.overlay-catch {
+  position: fixed; inset: 0;
+  z-index: 150; display: none;
+}
+.overlay-catch.open { display: block; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .sidebar { width: var(--sidebar-rail); }
+  .sidebar-logo { padding: var(--sp-15) 0; text-align: center; }
+  .sidebar-logo .logo-text { display: none; }
+  .nav-group-label { display: none; }
+  .nav-item { padding: var(--sp-12) 0; justify-content: center; gap: 0; }
+  .nav-label { display: none; }
+  .sidebar-footer { padding: var(--sp-12) 0; display: flex; justify-content: center; }
+  .user-name, .user-role { display: none; }
+  .main-wrap { margin-left: var(--sidebar-rail); }
+}
+
+@media (max-width: 640px) {
+  body { flex-direction: column; }
+  .sidebar { display: none; }
+  .main-wrap { margin-left: 0; margin-bottom: 60px; }
+
+  .bottom-bar {
+    display: flex !important;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border-soft);
+    z-index: 100;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 var(--sp-9);
+  }
+  .bottom-bar-item {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    font-size: 9px; color: var(--text-secondary); cursor: pointer; padding: var(--sp-7);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    min-width: 44px;
+  }
+  .bottom-bar-item i { font-size: 20px; }
+  .bottom-bar-item.active { color: var(--orange); }
+
+  .yacht-grid { grid-template-columns: 1fr; }
+  .compare-grid { grid-template-columns: 1fr; }
+  .fraser-yachts { grid-template-columns: 1fr; }
+  .topbar { padding: 0 var(--sp-15); gap: var(--sp-9); }
+  .page { padding: var(--sp-24) var(--sp-15); }
+  .list-actions-row { flex-wrap: wrap; }
+  .fraser-broker-bar { top: 52px; padding: 0 var(--sp-15); gap: var(--sp-9); flex-wrap: wrap; height: auto; min-height: 48px; padding-top: var(--sp-9); padding-bottom: var(--sp-9); }
+  .fraser-section { padding: var(--sp-24); }
+  .fraser-banner { padding: var(--sp-24); }
+}
+
+.bottom-bar { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo-text">YACHT<span>IQ</span></span>
+    <span class="logo-icon" style="display:none;font-size:13px;font-weight:700;letter-spacing:1.98px;">Y<span style="color:var(--orange-gold);font-weight:300;">I</span></span>
+  </div>
+
+  <span class="nav-group-label">Navigation</span>
+  <a class="nav-item" href="#"><i class="ti ti-layout-dashboard"></i><span class="nav-label">Dashboard</span></a>
+  <a class="nav-item" href="#"><i class="ti ti-sailboat"></i><span class="nav-label">Yachts</span></a>
+  <a class="nav-item" href="#"><i class="ti ti-map-pin"></i><span class="nav-label">Yachts Show</span></a>
+  <a class="nav-item active" href="#"><i class="ti ti-list-details"></i><span class="nav-label">Lists &amp; Shows</span></a>
+  <a class="nav-item" href="#"><i class="ti ti-bell"></i><span class="nav-label">Yacht Updates</span></a>
+  <a class="nav-item" href="#"><i class="ti ti-sparkles"></i><span class="nav-label">Yacht Matches</span></a>
+  <a class="nav-item" href="#"><i class="ti ti-chart-bar"></i><span class="nav-label">Market Intelligence</span></a>
+  <a class="nav-item" href="#"><i class="ti ti-anchor"></i><span class="nav-label">Shipyards</span></a>
+  <a class="nav-item" href="#"><i class="ti ti-mail"></i><span class="nav-label">Emails</span></a>
+  <a class="nav-item" href="#"><i class="ti ti-file-invoice"></i><span class="nav-label">Centrals &amp; Deals</span></a>
+
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-avatar">JS</div>
+      <div>
+        <div class="user-name">James Smith</div>
+        <div class="user-role">Broker</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN WRAP ── -->
+<div class="main-wrap">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="search-wrap">
+      <i class="ti ti-search"></i>
+      <input type="text" placeholder="Search by yacht name">
+    </div>
+    <button class="btn-filter-top">
+      <i class="ti ti-adjustments-horizontal"></i>
+      Filter
+    </button>
+    <button class="btn-outline-sm" onclick="showToast('Filters reset')">Reset</button>
+    <div class="tb-spacer"></div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:var(--fs-14);font-weight:500;cursor:pointer;color:var(--text-primary);">
+      <div class="user-avatar" style="width:28px;height:28px;font-size:10px;">JS</div>
+      James Smith
+      <i class="ti ti-chevron-down" style="font-size:12px;color:var(--text-muted);"></i>
+    </div>
+  </header>
+
+  <!-- PAGE -->
+  <div class="page">
+
+    <!-- ── LIST VIEW ── -->
+    <div id="listView">
+      <div class="breadcrumb" onclick="showToast('← All Yachts')">
+        <i class="ti ti-arrow-left" style="font-size:11px;"></i>
+        All Yachts
+      </div>
+
+      <div class="list-header-row">
+        <div class="list-header-left">
+          <div class="list-title-row">
+            <h1 class="list-title">EK Test</h1>
+            <button class="icon-btn" title="Lock list"><i class="ti ti-lock"></i></button>
+            <div class="toggle-switch" title="Toggle active"></div>
+          </div>
+          <span class="results-label">4 results found</span>
+        </div>
+
+        <div class="list-actions-row">
+          <button class="btn-remove" onclick="showToast('Removing selected yachts from list…')">
+            <i class="ti ti-circle-x"></i>
+            Remove from List (3)
+          </button>
+
+          <select class="list-name-select">
+            <option>EK Test</option>
+            <option>Summer 2026 Selection</option>
+            <option>Client A — Charter</option>
+          </select>
+
+          <button class="view-btn active" title="Grid view" onclick="showToast('Grid view')">
+            <i class="ti ti-layout-grid"></i>
+          </button>
+
+          <!-- Dots menu -->
+          <div class="dots-wrap">
+            <button class="btn-dots" id="dotsBtn" onclick="toggleMenu(event)">
+              <i class="ti ti-dots-vertical"></i>
+            </button>
+            <div class="dots-menu" id="dotsMenu">
+              <div class="menu-section">
+                <div class="menu-section-label">Compare</div>
+                <div class="menu-item" onclick="openCompare('all')">
+                  <i class="ti ti-layout-grid"></i>Compare All
+                </div>
+                <div class="menu-item" onclick="openCompare('selected')">
+                  <i class="ti ti-checks"></i>Compare Selected
+                </div>
+              </div>
+              <div class="menu-section">
+                <div class="menu-section-label">Share &amp; Export</div>
+                <div class="menu-item" onclick="closeMenu();showToast('Opening email composer…')">
+                  <i class="ti ti-send"></i>Send Email
+                </div>
+                <div class="menu-item" onclick="closeMenu();showToast('Copying share link…')">
+                  <i class="ti ti-link"></i>Share List
+                </div>
+                <div class="menu-item" onclick="closeMenu();showToast('Generating PDF…')">
+                  <i class="ti ti-file-type-pdf"></i>Export PDF
+                </div>
+              </div>
+              <div class="menu-section">
+                <div class="menu-item danger" onclick="closeMenu();showToast('Deleting list…')">
+                  <i class="ti ti-trash"></i>Delete List
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- YACHT GRID -->
+      <div class="yacht-grid" id="yachtGrid">
+
+        <div class="yacht-card" onclick="toggleSelect(this)">
+          <div class="card-img-wrap">
+            <img src="https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=600&q=80" alt="SIMENA">
+            <div class="card-tag">For Sale</div>
+            <div class="card-select-check"><i class="ti ti-check"></i></div>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Simena</div>
+            <div class="card-row"><span class="card-row-label">Price</span><span class="card-row-val">€45,900,000</span></div>
+            <div class="card-row"><span class="card-row-label">LOA</span><span class="card-row-val">203 ft 5 in / 61.61 m</span></div>
+            <div class="card-row"><span class="card-row-label">Build</span><span class="card-row-val">2026</span><span class="card-row-extra">12 guests / 6 crew</span></div>
+            <div class="card-row"><span class="card-row-label">Location</span><span class="card-row-val">Antalya, Turkey</span></div>
+            <div class="card-row"><span class="card-row-label">Builder</span><span class="card-row-val">Ares Shipyard</span></div>
+            <div class="card-row"><span class="card-row-label">Brokerage</span><span class="card-row-val">Northrop &amp; Johnson</span></div>
+            <div class="card-edit-row"><i class="ti ti-map-pin"></i>List Location</div>
+            <div class="card-edit-row"><i class="ti ti-notes"></i>Observations</div>
+          </div>
+        </div>
+
+        <div class="yacht-card" onclick="toggleSelect(this)">
+          <div class="card-img-wrap">
+            <img src="https://images.unsplash.com/photo-1605281317010-fe5ffe798166?w=600&q=80" alt="NGONI">
+            <div class="card-tag">For Sale</div>
+            <div class="card-select-check"><i class="ti ti-check"></i></div>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Ngoni</div>
+            <div class="card-row"><span class="card-row-label">Price</span><span class="card-row-val">€38,500,000</span></div>
+            <div class="card-row"><span class="card-row-label">LOA</span><span class="card-row-val">190 ft 4 in / 58.15 m</span></div>
+            <div class="card-row"><span class="card-row-label">Build / Refit</span><span class="card-row-val">2017 / 2024</span><span class="card-row-extra">8 guests / 4 crew</span></div>
+            <div class="card-row"><span class="card-row-label">Location</span><span class="card-row-val">Palma, Balearic Islands</span></div>
+            <div class="card-row"><span class="card-row-label">Builder</span><span class="card-row-val">Royal Huisman</span></div>
+            <div class="card-row"><span class="card-row-label">Brokerage</span><span class="card-row-val">Carrswood Yachts</span></div>
+            <div class="card-edit-row"><i class="ti ti-map-pin"></i>List Location</div>
+            <div class="card-edit-row"><i class="ti ti-notes"></i>Observations</div>
+          </div>
+        </div>
+
+        <div class="yacht-card" onclick="toggleSelect(this)">
+          <div class="card-img-wrap">
+            <img src="https://images.unsplash.com/photo-1531525645387-7f14be1bdbbd?w=600&q=80" alt="OHANA">
+            <div class="card-tag">For Sale</div>
+            <div class="card-select-check"><i class="ti ti-check"></i></div>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Ohana</div>
+            <div class="card-row"><span class="card-row-label">Price</span><span class="card-row-val">€22,495,000</span></div>
+            <div class="card-row"><span class="card-row-label">LOA</span><span class="card-row-val">163 ft 1 in / 49.7 m</span></div>
+            <div class="card-row"><span class="card-row-label">Build / Refit</span><span class="card-row-val">2012 / 2025</span><span class="card-row-extra">10 guests / 5 crew</span></div>
+            <div class="card-row"><span class="card-row-label">Location</span><span class="card-row-val">La Spezia, Italy</span></div>
+            <div class="card-row"><span class="card-row-label">Builder</span><span class="card-row-val">Fitzroy Yachts</span></div>
+            <div class="card-row"><span class="card-row-label">Brokerage</span><span class="card-row-val">Edmiston &amp; Co</span></div>
+            <div class="card-edit-row"><i class="ti ti-map-pin"></i>List Location</div>
+            <div class="card-edit-row"><i class="ti ti-notes"></i>Observations</div>
+          </div>
+        </div>
+
+        <div class="yacht-card" onclick="toggleSelect(this)">
+          <div class="card-img-wrap">
+            <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&q=80" alt="ANDROMEDA LA DEA">
+            <div class="card-tag">For Sale</div>
+            <div class="card-select-check"><i class="ti ti-check"></i></div>
+          </div>
+          <div class="card-body">
+            <div class="card-name">Andromeda La Dea</div>
+            <div class="card-row"><span class="card-row-label">Price</span><span class="card-row-val">€24,950,000</span></div>
+            <div class="card-row"><span class="card-row-label">LOA</span><span class="card-row-val">154 ft 2 in / 47 m</span></div>
+            <div class="card-row"><span class="card-row-label">Build / Refit</span><span class="card-row-val">1990 / 2026</span><span class="card-row-extra">12 guests / 6 crew</span></div>
+            <div class="card-row"><span class="card-row-label">Location</span><span class="card-row-val">Viareggio, Italy</span></div>
+            <div class="card-row"><span class="card-row-label">Builder</span><span class="card-row-val">Perini Navi</span></div>
+            <div class="card-row"><span class="card-row-label">Brokerage</span><span class="card-row-val">Edmiston &amp; Co</span></div>
+            <div class="card-edit-row"><i class="ti ti-map-pin"></i>List Location</div>
+            <div class="card-edit-row"><i class="ti ti-notes"></i>Observations</div>
+          </div>
+        </div>
+
+      </div><!-- /yacht-grid -->
+    </div><!-- /listView -->
+
+
+
+    <!-- ── FRASER OUTPUT VIEW ── -->
+    <div id="fraserView">
+      <div class="fraser-broker-bar" id="fraserBrokerBar">
+        <div class="fraser-broker-back" onclick="backToList()">
+          <i class="ti ti-arrow-left" style="font-size:14px;"></i>
+          Back to List
+        </div>
+        <span class="fraser-broker-note">Viewing as <strong>broker</strong></span>
+        <div class="fraser-view-tabs">
+          <button class="fraser-tab active" id="tabBroker" onclick="setFraserTab('broker')">Broker View</button>
+          <button class="fraser-tab" id="tabClient" onclick="setFraserTab('client')">Client View</button>
+        </div>
+        <button class="btn-copy-link" onclick="copyLink()">
+          <i class="ti ti-copy" style="font-size:11px;"></i>Copy Link
+        </button>
+      </div>
+
+      <div class="fraser-doc">
+        <div class="fraser-topbar">FRASER YACHTS</div>
+        <div class="fraser-alert">
+          This selection has been sent to you by <strong>LUKE ELMORE</strong>
+        </div>
+        <div class="fraser-hero">
+          <img src="https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=900&q=80" alt="Hero yacht">
+          <div class="fraser-hero-text">
+            <div class="fraser-eyebrow">Your Personal Selection</div>
+            <div class="fraser-hero-title" id="fraserTitle">YOUR UNFORGETTABLE<br>SUMMER ADVENTURE</div>
+            <div class="fraser-hero-sub">Presented by YachtIQ</div>
+          </div>
+        </div>
+        <div class="fraser-section">
+          <div class="fraser-section-title">Our Selection at a Glance</div>
+          <div class="fraser-divider"></div>
+          <p class="fraser-intro-text">Dear VIP Guest, this is a curated selection of the finest yachts available matching your criteria. Each vessel has been carefully chosen to exceed your expectations.</p>
+        </div>
+        <div class="fraser-banner">
+          <p>Section Banner (Custom)</p>
+          <h3 id="fraserBrand">BRAND NAME · BROKER NAME</h3>
+        </div>
+        <div class="fraser-yachts" id="fraserYachts"></div>
+        <div class="fraser-back-wrap">
+          <button class="fraser-back-btn" onclick="backToList()">
+            <i class="ti ti-arrow-left" style="font-size:14px;"></i>
+            Back to List
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+</div><!-- /main-wrap -->
+
+<!-- Bottom tab bar (mobile only) -->
+<nav class="bottom-bar">
+  <div class="bottom-bar-item"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+  <div class="bottom-bar-item"><i class="ti ti-sailboat"></i>Yachts</div>
+  <div class="bottom-bar-item active"><i class="ti ti-list-details"></i>Lists</div>
+  <div class="bottom-bar-item"><i class="ti ti-bell"></i>Updates</div>
+  <div class="bottom-bar-item"><i class="ti ti-user"></i>Profile</div>
+</nav>
+
+<!-- MODAL: Create Comparison -->
+<div class="modal-overlay" id="createModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+    <div class="modal-title">Create Comparison</div>
+
+    <div class="form-group">
+      <label class="form-label">Brand</label>
+      <select class="form-select" id="compBrand">
+        <option value="">Select brand</option>
+        <option>N&amp;J</option>
+        <option>Fraser</option>
+        <option>Unbranded</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Yacht Type</label>
+      <select class="form-select" id="compType">
+        <option value="">Select type</option>
+        <option>Charter</option>
+        <option>Sales</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Broker</label>
+      <select class="form-select" id="compBroker">
+        <option value="">Select broker</option>
+        <option>Luke Elmore</option>
+        <option>James Smith</option>
+        <option>Sarah Connor</option>
+      </select>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel-modal" onclick="closeModal()">Cancel</button>
+      <button class="btn-create" onclick="createComparison()">Create comparison</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay-catch" id="overlayCatch" onclick="closeMenu()"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+let compareMode = 'all';
+let selectedCards = new Set();
+
+function toggleSelect(card) {
+  if (card.classList.contains('selected')) {
+    card.classList.remove('selected');
+    selectedCards.delete(card);
+  } else {
+    card.classList.add('selected');
+    selectedCards.add(card);
+  }
+}
+
+function toggleMenu(e) {
+  e.stopPropagation();
+  const menu = document.getElementById('dotsMenu');
+  const oc = document.getElementById('overlayCatch');
+  const isOpen = menu.classList.contains('open');
+  menu.classList.toggle('open', !isOpen);
+  oc.classList.toggle('open', !isOpen);
+}
+function closeMenu() {
+  document.getElementById('dotsMenu').classList.remove('open');
+  document.getElementById('overlayCatch').classList.remove('open');
+}
+
+function openCompare(mode) {
+  closeMenu();
+  compareMode = mode;
+
+  if (mode === 'selected' && selectedCards.size === 0) {
+    showToast('Select at least one yacht first');
+    return;
+  }
+
+  openCreateModal();
+}
+
+function backToList() {
+  document.getElementById('listView').classList.remove('hidden');
+  document.getElementById('fraserView').classList.remove('active');
+  window.scrollTo(0, 0);
+}
+
+function openCreateModal() {
+  document.getElementById('createModal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('createModal').classList.remove('open');
+}
+function createComparison() {
+  const brand = document.getElementById('compBrand').value;
+  const broker = document.getElementById('compBroker').value;
+  closeModal();
+  buildFraserView(brand, broker);
+}
+
+const imgs = [
+  'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=600&q=80',
+  'https://images.unsplash.com/photo-1605281317010-fe5ffe798166?w=600&q=80',
+  'https://images.unsplash.com/photo-1531525645387-7f14be1bdbbd?w=600&q=80',
+  'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&q=80'
+];
+
+function buildFraserView(brand, broker) {
+  document.getElementById('fraserBrand').textContent =
+    (brand || 'BRAND').toUpperCase() + ' · ' + (broker || 'BROKER').toUpperCase();
+
+  const cards = compareMode === 'selected' && selectedCards.size > 0
+    ? Array.from(selectedCards)
+    : Array.from(document.querySelectorAll('.yacht-card'));
+
+  const yachtsEl = document.getElementById('fraserYachts');
+  yachtsEl.innerHTML = '';
+
+  cards.forEach((card, i) => {
+    const cname = card.querySelector('.card-name').textContent;
+    const price = card.querySelector('.card-row-val')?.textContent || '—';
+    const loa   = card.querySelectorAll('.card-row-val')[1]?.textContent.split('/')[0].trim() || '—';
+    const build = card.querySelectorAll('.card-row-val')[2]?.textContent.split('/')[0].trim() || '—';
+    const imgSrc = imgs[i % imgs.length];
+
+    const item = document.createElement('div');
+    item.className = 'fraser-yacht-item';
+    item.innerHTML = `
+      <div class="fraser-yacht-img">
+        <img src="${imgSrc}" alt="${cname}">
+        <div class="fraser-yacht-check"><i class="ti ti-check" style="font-size:10px;"></i></div>
+      </div>
+      <div class="fraser-yacht-info">
+        <div class="fraser-yacht-name">${cname.toUpperCase()}</div>
+        <div class="fraser-specs">
+          <div class="fraser-spec">
+            <span class="fraser-spec-val">${loa}</span>
+            <span class="fraser-spec-lbl">LOA</span>
+          </div>
+          <div class="fraser-spec">
+            <span class="fraser-spec-val">${build}</span>
+            <span class="fraser-spec-lbl">Build</span>
+          </div>
+        </div>
+        <div class="fraser-price-row">Price for sale: <strong>${price}</strong></div>
+      </div>`;
+    yachtsEl.appendChild(item);
+  });
+
+  document.getElementById('listView').classList.add('hidden');
+  document.getElementById('fraserView').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function setFraserTab(tab) {
+  document.getElementById('tabBroker').classList.toggle('active', tab === 'broker');
+  document.getElementById('tabClient').classList.toggle('active', tab === 'client');
+  if (tab === 'client') {
+    document.getElementById('fraserBrokerBar').style.display = 'none';
+    showToast('Client view — broker bar hidden');
+  } else {
+    document.getElementById('fraserBrokerBar').style.display = '';
+    showToast('Broker view');
+  }
+}
+
+function copyLink() {
+  const fake = window.location.href.split('?')[0] + '?comparison=ek-test-' + Date.now().toString(36);
+  navigator.clipboard.writeText(fake).then(() => showToast('Link copied!')).catch(() => showToast('Link copied!'));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeMenu(); closeModal(); }
+});
+</script>
+</body>
+</html>
