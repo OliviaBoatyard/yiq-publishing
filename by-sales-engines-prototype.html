@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BY Sales – Included Engines (Prototype)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal: #1a6b6b;
+    --teal-dark: #155858;
+    --teal-light: #e8f4f4;
+    --navy: #1a2b3c;
+    --text: #1a2b3c;
+    --text-muted: #6b7a8d;
+    --text-light: #9aa3ae;
+    --border: #dde3ea;
+    --border-light: #eef1f4;
+    --bg: #f0f2f5;
+    --white: #ffffff;
+    --red: #c0392b;
+    --red-light: #fdf0ee;
+    --green: #1a7a4a;
+    --green-light: #edf7f1;
+    --yellow-light: #fffbeb;
+    --yellow: #d97706;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.1);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.15);
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+  .topbar-left { display: flex; align-items: center; gap: 16px; }
+  .back-btn {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--text-muted); font-size: 13px; font-weight: 500;
+    cursor: pointer; text-decoration: none; border: none; background: none;
+  }
+  .back-btn:hover { color: var(--teal); }
+  .quote-type-badge {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--text-muted);
+  }
+  .quote-type-badge span {
+    background: var(--teal-light); color: var(--teal);
+    padding: 2px 10px; border-radius: 20px; font-weight: 600; font-size: 12px;
+  }
+  .topbar-actions { display: flex; gap: 10px; }
+  .btn-outline {
+    padding: 8px 18px; border: 1.5px solid var(--border);
+    background: var(--white); color: var(--text); border-radius: var(--radius);
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all .15s;
+  }
+  .btn-outline:hover { border-color: var(--teal); color: var(--teal); }
+  .btn-primary {
+    padding: 8px 18px; border: none;
+    background: var(--teal); color: var(--white); border-radius: var(--radius);
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: background .15s;
+  }
+  .btn-primary:hover { background: var(--teal-dark); }
+
+  /* LAYOUT */
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 480px;
+    gap: 0;
+    min-height: calc(100vh - 57px);
+  }
+  .editor-col {
+    padding: 28px 24px;
+    overflow-y: auto;
+  }
+  .preview-col {
+    background: var(--white);
+    border-left: 1px solid var(--border);
+    padding: 28px 24px;
+    overflow-y: auto;
+  }
+
+  /* CHANGE BANNER */
+  .change-banner {
+    background: var(--yellow-light);
+    border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: var(--yellow);
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .change-banner strong { font-weight: 700; }
+
+  /* SECTION CARD */
+  .section-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .section-header h2 {
+    font-size: 16px; font-weight: 700; color: var(--text);
+  }
+  .chevron { color: var(--text-muted); font-size: 18px; transition: transform .2s; }
+  .chevron.open { transform: rotate(0deg); }
+  .chevron.closed { transform: rotate(180deg); }
+  .section-body { padding: 0 20px 20px; }
+
+  /* FORM FIELDS */
+  .field-group { margin-bottom: 14px; }
+  .field-label {
+    font-size: 11px; font-weight: 600; letter-spacing: .06em;
+    color: var(--text-muted); margin-bottom: 5px;
+    text-transform: uppercase;
+  }
+  .field-label .required { color: var(--red); margin-left: 2px; }
+  .field-input {
+    width: 100%; padding: 9px 12px;
+    border: 1.5px solid var(--border); border-radius: var(--radius);
+    font-family: inherit; font-size: 14px; color: var(--text);
+    background: var(--white); transition: border-color .15s;
+  }
+  .field-input:focus { outline: none; border-color: var(--teal); }
+  .field-input-with-icon { position: relative; }
+  .field-input-with-icon .field-input { padding-right: 36px; }
+  .field-icon {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    color: var(--teal); cursor: pointer; display: flex; gap: 4px;
+  }
+
+  /* ENGINES TABLE */
+  .engines-inner { border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .engines-table-header {
+    display: grid; grid-template-columns: 1fr 40px;
+    padding: 8px 12px;
+    background: var(--bg); border-bottom: 1px solid var(--border);
+    font-size: 11px; font-weight: 600; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: .05em;
+  }
+  /* CHANGE 1: no Price column in header for included engines */
+  .engine-row {
+    display: grid; grid-template-columns: 1fr 40px;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-light);
+    transition: background .1s;
+  }
+  .engine-row:last-child { border-bottom: none; }
+  .engine-row:hover { background: var(--bg); }
+  .engine-name { font-size: 14px; font-weight: 500; color: var(--text); }
+  .engine-included-badge {
+    font-size: 11px; color: var(--teal); background: var(--teal-light);
+    padding: 2px 8px; border-radius: 20px; font-weight: 600; display: inline-block; margin-top: 2px;
+  }
+  .engine-row-actions { display: flex; justify-content: flex-end; }
+  .engine-x-btn {
+    width: 28px; height: 28px; border: none; background: none;
+    color: var(--text-light); cursor: pointer; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s; font-size: 16px;
+  }
+  .engine-x-btn:hover { background: var(--red-light); color: var(--red); }
+
+  /* CHANGE 2: No subtotal section */
+  .add-engine-btn {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--teal); font-size: 13px; font-weight: 600;
+    background: none; border: none; cursor: pointer;
+    padding: 12px 0 4px;
+    transition: opacity .15s;
+  }
+  .add-engine-btn:hover { opacity: .75; }
+
+  /* ADD ENGINE DROPDOWN */
+  .add-engine-wrapper { position: relative; }
+  .engine-search-dropdown {
+    border: 1.5px solid var(--border); border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+    background: var(--white);
+    box-shadow: var(--shadow-md);
+    max-height: 200px; overflow-y: auto;
+    margin-top: -1px;
+  }
+  .engine-search-input {
+    width: 100%; padding: 9px 12px;
+    border: 1.5px solid var(--teal); border-radius: var(--radius) var(--radius) 0 0;
+    font-family: inherit; font-size: 14px;
+    outline: none;
+  }
+  .engine-option {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; cursor: pointer;
+    transition: background .1s;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .engine-option:last-child { border-bottom: none; }
+  .engine-option:hover { background: var(--teal-light); }
+  .engine-option-name { font-weight: 500; font-size: 13px; }
+  .engine-option-sku { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+  .engine-option-tag {
+    font-size: 10px; font-weight: 700; padding: 2px 8px;
+    border-radius: 20px; text-transform: uppercase; letter-spacing: .04em;
+    background: var(--teal-light); color: var(--teal);
+  }
+
+  /* MODAL OVERLAY */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(26,43,60,.45);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 500;
+    opacity: 0; pointer-events: none;
+    transition: opacity .2s;
+  }
+  .modal-overlay.active { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    width: 480px; max-width: 95vw;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(16px);
+    transition: transform .2s;
+    overflow: hidden;
+  }
+  .modal-overlay.active .modal { transform: translateY(0); }
+  .modal-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .modal-header-row {
+    display: flex; align-items: flex-start; justify-content: space-between;
+  }
+  .modal-title-group { display: flex; align-items: center; gap: 10px; }
+  .modal-back-btn {
+    background: none; border: none; color: var(--text-muted);
+    cursor: pointer; font-size: 18px; padding: 0; line-height: 1;
+    transition: color .15s;
+  }
+  .modal-back-btn:hover { color: var(--teal); }
+  .modal-title { font-size: 17px; font-weight: 700; }
+  .modal-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+  .modal-close {
+    background: none; border: none; color: var(--text-muted);
+    cursor: pointer; font-size: 20px; line-height: 1;
+    transition: color .15s; padding: 0;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-light);
+    display: flex; justify-content: flex-end; gap: 10px;
+  }
+  .btn-danger {
+    padding: 9px 20px; border: none;
+    background: var(--red); color: var(--white); border-radius: var(--radius);
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: opacity .15s;
+  }
+  .btn-danger:hover { opacity: .85; }
+  .btn-cancel {
+    padding: 9px 20px; border: 1.5px solid var(--border);
+    background: var(--white); color: var(--text); border-radius: var(--radius);
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: border-color .15s;
+  }
+  .btn-cancel:hover { border-color: var(--teal); color: var(--teal); }
+
+  /* STEP 1: Choose action */
+  .action-cards { display: flex; flex-direction: column; gap: 10px; }
+  .action-card {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px; border: 1.5px solid var(--border);
+    border-radius: var(--radius); cursor: pointer;
+    transition: all .15s;
+  }
+  .action-card:hover { border-color: var(--teal); background: var(--teal-light); }
+  .action-icon {
+    width: 40px; height: 40px;
+    background: var(--bg); border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .action-text h3 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .action-text p { font-size: 12px; color: var(--text-muted); }
+
+  /* STEP 2 Remove: Value input */
+  .value-info-box {
+    background: var(--bg); border-radius: var(--radius);
+    padding: 14px 16px; margin-bottom: 16px;
+  }
+  .value-info-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; padding: 3px 0;
+  }
+  .value-info-row .label { color: var(--text-muted); }
+  .value-info-row .val { font-weight: 600; }
+  .value-info-row .val.negative { color: var(--red); }
+  .value-info-divider { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
+  .field-hint { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
+  .field-input.large { font-size: 22px; font-family: 'DM Mono', monospace; font-weight: 500; padding: 12px 14px; }
+
+  /* STEP 2 Swap */
+  .replacement-select {
+    width: 100%; padding: 9px 12px;
+    border: 1.5px solid var(--border); border-radius: var(--radius);
+    font-family: inherit; font-size: 14px; color: var(--text);
+    background: var(--white); cursor: pointer; margin-bottom: 14px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7a8d' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+  }
+  .replacement-select:focus { outline: none; border-color: var(--teal); }
+  .diff-display {
+    background: var(--bg); border-radius: var(--radius);
+    padding: 12px 16px; margin-top: 10px;
+    font-size: 13px;
+  }
+  .diff-row { display: flex; justify-content: space-between; padding: 2px 0; }
+  .diff-row .positive { color: var(--green); font-weight: 600; }
+  .diff-row .negative { color: var(--red); font-weight: 600; }
+  .diff-row .neutral { color: var(--text-muted); }
+
+  /* PREVIEW PANEL */
+  .preview-title { font-size: 22px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+  .preview-meta { display: flex; justify-content: space-between; margin-bottom: 16px; }
+  .preview-meta-left { font-size: 13px; color: var(--text-muted); }
+  .preview-meta-left strong { display: block; color: var(--text); font-weight: 600; font-size: 14px; }
+  .preview-meta-right { text-align: right; font-size: 12px; color: var(--text-muted); }
+  .preview-meta-right strong { display: block; color: var(--text); }
+  .preview-divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+  .preview-section-title { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+  .preview-line {
+    display: flex; justify-content: space-between;
+    font-size: 13px; padding: 4px 0;
+    color: var(--text);
+  }
+  .preview-line .label { color: var(--text-muted); }
+  .preview-line .val { font-weight: 500; }
+  .preview-line .val.strikethrough { text-decoration: line-through; color: var(--text-muted); }
+  .preview-line .val.discount { color: var(--red); font-weight: 600; }
+  .preview-view-toggle {
+    font-size: 12px; color: var(--teal); font-weight: 700;
+    cursor: pointer; border: none; background: none; padding: 4px 0;
+  }
+  .preview-summary {
+    background: var(--bg); border-radius: var(--radius);
+    padding: 14px 16px; margin-top: 8px;
+  }
+  .preview-summary-row {
+    display: flex; justify-content: space-between;
+    font-size: 13px; padding: 4px 0;
+  }
+  .preview-summary-row .label { color: var(--text-muted); }
+  .preview-summary-row .val { font-weight: 500; }
+  .preview-summary-row .val.discount { color: var(--red); }
+  .preview-total-row {
+    display: flex; justify-content: space-between;
+    padding: 12px 0 4px; margin-top: 6px;
+    border-top: 1.5px solid var(--border);
+  }
+  .preview-total-row .label { font-size: 15px; font-weight: 800; }
+  .preview-total-row .val { font-size: 15px; font-weight: 800; color: var(--navy); }
+  .preview-total-row .val.negative-total { color: var(--red); }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--navy); color: var(--white);
+    padding: 10px 20px; border-radius: 30px;
+    font-size: 13px; font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    z-index: 9999; transition: transform .3s;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* PROTOTYPE LABEL */
+  .proto-label {
+    position: fixed; bottom: 12px; right: 16px;
+    font-size: 10px; color: var(--text-light);
+    background: var(--white); border: 1px solid var(--border);
+    padding: 3px 8px; border-radius: 20px; z-index: 200;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <button class="back-btn">← Back</button>
+    <div class="quote-type-badge">Quote Type: <span>Boat</span></div>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn-outline">Save Draft</button>
+    <button class="btn-primary">Preview &amp; Finalize</button>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- LEFT: EDITOR -->
+  <div class="editor-col">
+
+    <!-- Change callout -->
+    <div class="change-banner">
+      <span>🔧</span>
+      <div>
+        <strong>Prototype — 2 cambios aplicados:</strong>
+        (1) Engines incluidos no muestran precio en la tabla. El valor se solicita solo al remover/swappear.
+        (2) Se eliminaron subtotales de included engines del form. Los totales se consolidan en el resumen.
+      </div>
+    </div>
+
+    <!-- BOAT section -->
+    <div class="section-card">
+      <div class="section-header" onclick="toggleSection('boat-body','boat-chevron')">
+        <h2>Boat</h2>
+        <span class="chevron open" id="boat-chevron">⌃</span>
+      </div>
+      <div class="section-body" id="boat-body">
+        <div class="field-group">
+          <div class="field-label">BOAT/MODEL <span class="required">*</span></div>
+          <div class="field-input-with-icon">
+            <input class="field-input" type="text" value="2026 Grady-White Freedom 285">
+            <span class="field-icon">↗ ⌄</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">TITLE <span class="required">*</span></div>
+          <input class="field-input" type="text" value="2026 Grady-White Freedom 285">
+        </div>
+        <div class="field-group">
+          <div class="field-label">STOCK NUMBER <span class="required">*</span></div>
+          <input class="field-input" type="text" value="222281">
+        </div>
+
+        <!-- INCLUDED ENGINES -->
+        <div class="section-card" style="margin-top:8px; margin-bottom:0; box-shadow:none; border: 1.5px solid var(--border);">
+          <div class="section-header" onclick="toggleSection('engines-body','engines-chevron')">
+            <h2 style="font-size:15px; color:var(--teal);">Included Engines</h2>
+            <span class="chevron open" id="engines-chevron">⌃</span>
+          </div>
+          <div id="engines-body">
+            <div style="padding: 0 12px 4px;">
+              <div class="engines-inner">
+                <div class="engines-table-header">
+                  <!-- CHANGE 1: Only "Engine Model" column, no Price -->
+                  <div>Engine Model</div>
+                  <div></div>
+                </div>
+                <div id="engines-list">
+                  <!-- populated by JS -->
+                </div>
+              </div>
+              <div class="add-engine-wrapper" id="add-engine-wrapper">
+                <button class="add-engine-btn" onclick="toggleAddDropdown()">+ Add Engine</button>
+                <div id="add-engine-dropdown" style="display:none;">
+                  <input class="engine-search-input" type="text" placeholder="Search..." id="engine-search-input" oninput="filterEngineOptions()" onfocus="this.select()">
+                  <div class="engine-search-dropdown" id="engine-options-list">
+                    <!-- populated by JS -->
+                  </div>
+                </div>
+              </div>
+              <!-- CHANGE 2: NO subtotal block here -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: PREVIEW -->
+  <div class="preview-col">
+    <div class="preview-title">2026 Grady-White Freedom 285</div>
+    <div class="preview-meta">
+      <div class="preview-meta-left">
+        <span style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Prepared for:</span>
+        <strong>Olivia Martiren</strong>
+      </div>
+      <div class="preview-meta-right">
+        <span>Quote #: <strong>11A6E3DD</strong></span><br>
+        <span>Expires: <strong>06/16/2026</strong></span>
+      </div>
+    </div>
+    <hr class="preview-divider">
+
+    <!-- Pricing -->
+    <div class="preview-section-title">Pricing</div>
+    <div class="preview-line"><span class="label">MSRP</span><span class="val strikethrough">$329,459</span></div>
+    <div class="preview-line"><span class="label">Your Price</span><span class="val">$329,459</span></div>
+    <button class="preview-view-toggle">View all</button>
+    <hr class="preview-divider">
+
+    <!-- Dealer Options -->
+    <div class="preview-section-title">Dealer Options <span style="float:right;font-size:15px;font-weight:800;">$28,000</span></div>
+    <div class="preview-line"><span class="label">OptionA</span><span class="val">$15,000</span></div>
+    <div class="preview-line"><span class="label">OptionB</span><span class="val">$13,000</span></div>
+    <hr class="preview-divider">
+
+    <!-- Engines (live) -->
+    <div class="preview-section-title">Engines</div>
+    <div id="preview-engines-list"></div>
+    <button class="preview-view-toggle" id="preview-view-toggle" onclick="togglePreviewEngines()">View all</button>
+    <hr class="preview-divider">
+
+    <!-- Summary (live) -->
+    <div class="preview-section-title">Summary</div>
+    <div class="preview-summary">
+      <div class="preview-summary-row"><span class="label">Base Price</span><span class="val">$329,459</span></div>
+      <div class="preview-summary-row"><span class="label">Dealer Options</span><span class="val">$28,000</span></div>
+      <div id="preview-engine-discount-row" style="display:none;">
+        <div class="preview-summary-row">
+          <span class="label" id="preview-discount-label">Engine Removal Discount</span>
+          <span class="val discount" id="preview-discount-val"></span>
+        </div>
+      </div>
+      <div id="preview-swap-diff-row" style="display:none;">
+        <div class="preview-summary-row">
+          <span class="label" id="preview-swap-label">Engine Swap Adjustment</span>
+          <span class="val" id="preview-swap-val" style="font-weight:600;"></span>
+        </div>
+      </div>
+      <div class="preview-total-row">
+        <span class="label">Total Price</span>
+        <span class="val" id="preview-total">$357,459</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ==================== MODAL: STEP 1 — Choose Action ==================== -->
+<div class="modal-overlay" id="modal-step1">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-row">
+        <div>
+          <div class="modal-title">Modify included engine?</div>
+          <div class="modal-subtitle" id="modal-step1-subtitle"></div>
+        </div>
+        <button class="modal-close" onclick="closeAllModals()">×</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="action-cards">
+        <div class="action-card" onclick="openRemoveStep2()">
+          <div class="action-icon">🗑</div>
+          <div class="action-text">
+            <h3>Remove engine</h3>
+            <p>Take this engine out of the boat configuration. You'll set the credit value.</p>
+          </div>
+        </div>
+        <div class="action-card" onclick="openSwapStep2()">
+          <div class="action-icon">⇄</div>
+          <div class="action-text">
+            <h3>Swap / Replace engine</h3>
+            <p>Replace this engine with a different model. You'll set the price difference.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: STEP 2A — Remove ==================== -->
+<div class="modal-overlay" id="modal-remove">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-row">
+        <div class="modal-title-group">
+          <button class="modal-back-btn" onclick="backToStep1()">←</button>
+          <div>
+            <div class="modal-title">Remove engine?</div>
+            <div class="modal-subtitle" id="modal-remove-subtitle"></div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeAllModals()">×</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <!-- NEW: ask for value only at removal time -->
+      <div class="field-group">
+        <div class="field-label">ENGINE CREDIT VALUE <span class="required">*</span></div>
+        <input class="field-input large" type="text" id="remove-value-input" placeholder="$0"
+          oninput="updateRemovePreview()" value="">
+        <div class="field-hint">Enter the credit amount the customer receives for removing this engine. Appears as a discount on the quote.</div>
+      </div>
+      <div class="value-info-box" id="remove-preview-box" style="display:none;">
+        <div class="value-info-row">
+          <span class="label">Engine credit applied</span>
+          <span class="val negative" id="remove-preview-credit"></span>
+        </div>
+        <hr class="value-info-divider">
+        <div class="value-info-row" style="font-size:12px; color:var(--text-muted);">
+          This will appear as "Engine Removal Discount" in the quote summary.
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeAllModals()">Cancel</button>
+      <button class="btn-danger" onclick="confirmRemove()">Remove Engine</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: STEP 2B — Swap ==================== -->
+<div class="modal-overlay" id="modal-swap">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-row">
+        <div class="modal-title-group">
+          <button class="modal-back-btn" onclick="backToStep1()">←</button>
+          <div>
+            <div class="modal-title">Select included engine</div>
+            <div class="modal-subtitle" id="modal-swap-subtitle"></div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeAllModals()">×</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <div class="field-label">REPLACEMENT ENGINE</div>
+        <select class="replacement-select" id="swap-engine-select" onchange="updateSwapPreview()">
+          <option value="">Select engine…</option>
+          <option value="Yamaha 250|15000">Yamaha 250 – $15,000</option>
+          <option value="2026 Yamaha F90JB|12206">2026 Yamaha F90JB – $12,206</option>
+          <option value="2000 Yamaha Outboards V6 4.2L 250hp|0">2000 Yamaha Outboards V6 4.2L 250hp – $0</option>
+          <option value="2026 Mercury Marine 425XL|0">2026 Mercury Marine® 425XL Verado – $0</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <div class="field-label">PRICE DIFFERENCE</div>
+        <input class="field-input large" type="text" id="swap-diff-input" placeholder="$0"
+          oninput="updateSwapPreview()" value="">
+        <div class="field-hint">Enter the additional cost (+) or credit (−) for the customer versus the current engine. Use a negative number for a credit (e.g. -2000).</div>
+      </div>
+      <div class="diff-display" id="swap-diff-display" style="display:none;">
+        <div class="diff-row">
+          <span>Replacing</span>
+          <span class="neutral" id="swap-from-name"></span>
+        </div>
+        <div class="diff-row">
+          <span>With</span>
+          <span id="swap-to-name" style="font-weight:600;"></span>
+        </div>
+        <div class="diff-row" style="margin-top:6px; padding-top:6px; border-top:1px solid var(--border);">
+          <span>Price adjustment</span>
+          <span id="swap-diff-result"></span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeAllModals()">Cancel</button>
+      <button class="btn-primary" onclick="confirmSwap()">Confirm swap</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+<div class="proto-label">Prototype v1 · BY Sales</div>
+
+<script>
+// ===================== DATA =====================
+const BASE_PRICE = 329459;
+const DEALER_OPTIONS = 28000;
+
+let engines = [
+  { id: 1, name: 'F350 FM' },
+  { id: 2, name: '2023 Yamaha F60LB' },
+];
+
+const ENGINE_CATALOG = [
+  { name: '2026 Yamaha F90JB', sku: '2026-F90JB' },
+  { name: '2000 Yamaha Outboards V6 4.2L 250hp', sku: 'CMU655' },
+  { name: '2026 Mercury Marine® 425XL Verado Cold Fusion White', sku: 'COI258' },
+  { name: 'Yamaha 250', sku: 'YAM250' },
+  { name: 'F350 FM', sku: 'F350FM' },
+  { name: '2023 Yamaha F60LB', sku: '1113151' },
+];
+
+let state = {
+  removalDiscount: 0,    // total negative applied from removals
+  swapAdjustment: 0,     // net adjustment from swaps
+  activeEngineId: null,
+  previewShowAll: false,
+  removalDiscountLabel: 'Engine Removal Discount',
+  swapAdjustmentLabel: 'Engine Swap Adjustment',
+};
+
+// ===================== RENDER =====================
+function renderEngines() {
+  const list = document.getElementById('engines-list');
+  if (engines.length === 0) {
+    list.innerHTML = '<div style="padding:12px;color:var(--text-muted);font-size:13px;text-align:center;">No engines added yet.</div>';
+    return;
+  }
+  list.innerHTML = engines.map(e => `
+    <div class="engine-row" id="engine-row-${e.id}">
+      <div>
+        <div class="engine-name">${e.name}</div>
+        <span class="engine-included-badge">Included</span>
+      </div>
+      <div class="engine-row-actions">
+        <button class="engine-x-btn" onclick="openStep1(${e.id})" title="Modify engine">×</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderPreview() {
+  const list = document.getElementById('preview-engines-list');
+  const showAll = state.previewShowAll;
+  const displayEngines = showAll ? engines : engines.slice(0, 2);
+
+  list.innerHTML = displayEngines.map(e => `
+    <div class="preview-line"><span class="label">${e.name}</span><span class="val">Included</span></div>
+  `).join('');
+
+  // Show discount line if removals happened
+  const removalRow = document.getElementById('preview-engine-discount-row');
+  if (state.removalDiscount < 0) {
+    removalRow.style.display = 'block';
+    document.getElementById('preview-discount-label').textContent = state.removalDiscountLabel;
+    document.getElementById('preview-discount-val').textContent = formatMoney(state.removalDiscount);
+  } else {
+    removalRow.style.display = 'none';
+  }
+
+  // Show swap adjustment line if swaps happened
+  const swapRow = document.getElementById('preview-swap-diff-row');
+  if (state.swapAdjustment !== 0) {
+    swapRow.style.display = 'block';
+    document.getElementById('preview-swap-label').textContent = state.swapAdjustmentLabel;
+    const swapValEl = document.getElementById('preview-swap-val');
+    swapValEl.textContent = formatMoney(state.swapAdjustment);
+    swapValEl.style.color = state.swapAdjustment < 0 ? 'var(--red)' : 'var(--green)';
+  } else {
+    swapRow.style.display = 'none';
+  }
+
+  // Total
+  const total = BASE_PRICE + DEALER_OPTIONS + state.removalDiscount + state.swapAdjustment;
+  const totalEl = document.getElementById('preview-total');
+  totalEl.textContent = formatMoney(total);
+  totalEl.className = 'val' + (total < 0 ? ' negative-total' : '');
+
+  // Toggle button
+  const toggle = document.getElementById('preview-view-toggle');
+  if (engines.length <= 2) { toggle.style.display = 'none'; }
+  else { toggle.style.display = 'block'; toggle.textContent = showAll ? 'View less' : 'View all'; }
+}
+
+function togglePreviewEngines() { state.previewShowAll = !state.previewShowAll; renderPreview(); }
+
+// ===================== MODAL STEP 1 =====================
+function openStep1(engineId) {
+  state.activeEngineId = engineId;
+  const engine = engines.find(e => e.id === engineId);
+  document.getElementById('modal-step1-subtitle').textContent = engine.name;
+  // Reset inputs
+  document.getElementById('remove-value-input').value = '';
+  document.getElementById('remove-preview-box').style.display = 'none';
+  document.getElementById('swap-engine-select').value = '';
+  document.getElementById('swap-diff-input').value = '';
+  document.getElementById('swap-diff-display').style.display = 'none';
+  showModal('modal-step1');
+}
+
+function openRemoveStep2() {
+  const engine = engines.find(e => e.id === state.activeEngineId);
+  document.getElementById('modal-remove-subtitle').textContent = engine.name;
+  hideModal('modal-step1');
+  showModal('modal-remove');
+  setTimeout(() => document.getElementById('remove-value-input').focus(), 200);
+}
+
+function openSwapStep2() {
+  const engine = engines.find(e => e.id === state.activeEngineId);
+  document.getElementById('modal-swap-subtitle').textContent = engine.name;
+  hideModal('modal-step1');
+  showModal('modal-swap');
+}
+
+function backToStep1() {
+  hideModal('modal-remove');
+  hideModal('modal-swap');
+  showModal('modal-step1');
+}
+
+// ===================== REMOVE LOGIC =====================
+function updateRemovePreview() {
+  const raw = document.getElementById('remove-value-input').value.replace(/[^0-9.]/g,'');
+  const val = parseFloat(raw) || 0;
+  const box = document.getElementById('remove-preview-box');
+  if (val > 0) {
+    box.style.display = 'block';
+    document.getElementById('remove-preview-credit').textContent = '-' + formatMoney(val);
+  } else {
+    box.style.display = 'none';
+  }
+}
+
+function confirmRemove() {
+  const raw = document.getElementById('remove-value-input').value.replace(/[^0-9.]/g,'');
+  const val = parseFloat(raw) || 0;
+  const engine = engines.find(e => e.id === state.activeEngineId);
+  engines = engines.filter(e => e.id !== state.activeEngineId);
+  state.removalDiscount -= val;
+  closeAllModals();
+  renderEngines();
+  renderPreview();
+  showToast(`"${engine.name}" removed${val > 0 ? ' · Credit: ' + formatMoney(val) : ''}`);
+}
+
+// ===================== SWAP LOGIC =====================
+function updateSwapPreview() {
+  const sel = document.getElementById('swap-engine-select').value;
+  const rawDiff = document.getElementById('swap-diff-input').value.replace(/[^0-9.\-]/g,'');
+  const diff = parseFloat(rawDiff) || 0;
+  const display = document.getElementById('swap-diff-display');
+  const engine = engines.find(e => e.id === state.activeEngineId);
+
+  if (sel) {
+    const [name] = sel.split('|');
+    display.style.display = 'block';
+    document.getElementById('swap-from-name').textContent = engine ? engine.name : '';
+    document.getElementById('swap-to-name').textContent = name;
+    const resultEl = document.getElementById('swap-diff-result');
+    if (rawDiff !== '') {
+      resultEl.textContent = (diff >= 0 ? '+' : '') + formatMoney(diff);
+      resultEl.className = diff > 0 ? 'positive' : diff < 0 ? 'negative' : 'neutral';
+    } else {
+      resultEl.textContent = '—';
+      resultEl.className = 'neutral';
+    }
+  } else {
+    display.style.display = 'none';
+  }
+}
+
+function confirmSwap() {
+  const sel = document.getElementById('swap-engine-select').value;
+  if (!sel) { showToast('Please select a replacement engine'); return; }
+  const rawDiff = document.getElementById('swap-diff-input').value.replace(/[^0-9.\-]/g,'');
+  const diff = parseFloat(rawDiff) || 0;
+  const [newName] = sel.split('|');
+  const engine = engines.find(e => e.id === state.activeEngineId);
+  const oldName = engine ? engine.name : '';
+  if (engine) engine.name = newName;
+  state.swapAdjustment += diff;
+  closeAllModals();
+  renderEngines();
+  renderPreview();
+  showToast(`Swapped "${oldName}" → "${newName}"${diff !== 0 ? ' · Adjustment: ' + (diff >= 0 ? '+' : '') + formatMoney(diff) : ''}`);
+}
+
+// ===================== ADD ENGINE =====================
+function toggleAddDropdown() {
+  const dd = document.getElementById('add-engine-dropdown');
+  const showing = dd.style.display !== 'none';
+  dd.style.display = showing ? 'none' : 'block';
+  if (!showing) {
+    document.getElementById('engine-search-input').value = '';
+    renderCatalogOptions('');
+    setTimeout(() => document.getElementById('engine-search-input').focus(), 50);
+  }
+}
+
+function renderCatalogOptions(filter) {
+  const list = document.getElementById('engine-options-list');
+  const items = ENGINE_CATALOG.filter(e =>
+    e.name.toLowerCase().includes(filter.toLowerCase()) ||
+    e.sku.toLowerCase().includes(filter.toLowerCase())
+  );
+  if (items.length === 0) {
+    list.innerHTML = '<div style="padding:12px;color:var(--text-muted);font-size:13px;text-align:center;">No results</div>';
+    return;
+  }
+  list.innerHTML = items.map(e => `
+    <div class="engine-option" onclick="addEngine('${e.name.replace(/'/g,"\\'")}')">
+      <div>
+        <div class="engine-option-name">${e.name}</div>
+        <div class="engine-option-sku">${e.sku}</div>
+      </div>
+      <span class="engine-option-tag">Engine</span>
+    </div>
+  `).join('');
+}
+
+function filterEngineOptions() {
+  const val = document.getElementById('engine-search-input').value;
+  renderCatalogOptions(val);
+}
+
+function addEngine(name) {
+  const newId = Date.now();
+  engines.push({ id: newId, name });
+  document.getElementById('add-engine-dropdown').style.display = 'none';
+  renderEngines();
+  renderPreview();
+  showToast(`"${name}" added`);
+}
+
+// ===================== UTILS =====================
+function showModal(id) { document.getElementById(id).classList.add('active'); }
+function hideModal(id) { document.getElementById(id).classList.remove('active'); }
+function closeAllModals() {
+  ['modal-step1','modal-remove','modal-swap'].forEach(hideModal);
+}
+
+function toggleSection(bodyId, chevronId) {
+  const body = document.getElementById(bodyId);
+  const chevron = document.getElementById(chevronId);
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : '';
+  chevron.className = 'chevron ' + (isOpen ? 'closed' : 'open');
+}
+
+function formatMoney(val) {
+  const abs = Math.abs(val);
+  const formatted = '$' + abs.toLocaleString('en-US', { minimumFractionDigits: 0 });
+  return val < 0 ? '-' + formatted : formatted;
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Close modals on overlay click
+['modal-step1','modal-remove','modal-swap'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function(e) {
+    if (e.target === this) closeAllModals();
+  });
+});
+
+// Close add-engine dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  const wrapper = document.getElementById('add-engine-wrapper');
+  if (!wrapper.contains(e.target)) {
+    document.getElementById('add-engine-dropdown').style.display = 'none';
+  }
+});
+
+// ===================== INIT =====================
+renderCatalogOptions('');
+renderEngines();
+renderPreview();
+</script>
+</body>
+</html>
