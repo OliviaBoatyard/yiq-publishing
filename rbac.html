@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RBAC Settings — Design Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F6F3;
+  --surface:#FFFFFF;
+  --surface2:#F2F0EC;
+  --border:#E4E1DA;
+  --border2:#D4D0C8;
+  --text:#1A1915;
+  --text2:#5C5A54;
+  --text3:#9B9890;
+  --teal:#0D7C6B;
+  --teal-light:#E8F5F2;
+  --teal-mid:#C2E8E0;
+  --teal-dark:#085549;
+  --amber:#C97D1A;
+  --amber-light:#FDF3E3;
+  --amber-mid:#F5D99A;
+  --red:#C0392B;
+  --red-light:#FDECEA;
+  --blue:#2563EB;
+  --blue-light:#EFF6FF;
+  --purple:#7C3AED;
+  --purple-light:#F5F3FF;
+  --gray-pill:#ECEAE4;
+  --font:'DM Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+  --radius:8px;
+  --radius-lg:12px;
+  --shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.05);
+  --shadow-lg:0 4px 16px rgba(0,0,0,.10),0 1px 4px rgba(0,0,0,.06);
+}
+
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh;overflow-x:hidden}
+
+/* ── SHELL ── */
+.shell{display:flex;height:100vh;overflow:hidden}
+
+/* ── LEFT NAV ── */
+.leftnav{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.brand{padding:18px 16px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.brand-icon{width:30px;height:30px;background:var(--teal);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-icon svg{width:16px;height:16px;fill:white}
+.brand-name{font-size:13px;font-weight:600;color:var(--text);letter-spacing:-.01em}
+.brand-name span{display:block;font-size:11px;font-weight:400;color:var(--text3);letter-spacing:0}
+
+.product-switch{margin:12px 12px 6px;background:var(--surface2);border-radius:var(--radius);padding:3px;display:flex;gap:2px}
+.product-btn{flex:1;padding:5px 0;border:none;background:transparent;font-family:var(--font);font-size:12px;font-weight:500;color:var(--text3);border-radius:6px;cursor:pointer;transition:all .15s}
+.product-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+.nav-section{padding:12px 8px 4px}
+.nav-label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);padding:0 8px 6px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--radius);font-size:13px;color:var(--text2);cursor:pointer;transition:all .12s;font-weight:400;border:none;background:transparent;width:100%;text-align:left}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--teal-light);color:var(--teal);font-weight:500}
+.nav-item svg{width:15px;height:15px;flex-shrink:0;opacity:.7}
+.nav-item.active svg{opacity:1}
+.nav-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* ── MAIN CONTENT ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:52px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0}
+.topbar-title{font-size:15px;font-weight:600;color:var(--text)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.avatar-sm{width:28px;height:28px;background:#1E40AF;border-radius:50%;font-size:11px;font-weight:600;color:white;display:flex;align-items:center;justify-content:center}
+.tenant-badge{font-size:11px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-weight:500}
+
+.content{flex:1;overflow-y:auto;padding:28px 32px}
+
+/* ── PAGE HEADERS ── */
+.page-header{margin-bottom:24px}
+.page-title{font-size:22px;font-weight:600;color:var(--text);letter-spacing:-.02em;margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--text3)}
+
+/* ── VIEWS ── */
+.view{display:none}
+.view.active{display:block}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all .15s}
+.btn-primary{background:var(--teal);color:white;border-color:var(--teal-dark)}
+.btn-primary:hover{background:var(--teal-dark)}
+.btn-secondary{background:var(--surface);color:var(--text);border-color:var(--border2)}
+.btn-secondary:hover{background:var(--surface2)}
+.btn-ghost{background:transparent;color:var(--text2);border-color:transparent}
+.btn-ghost:hover{background:var(--surface2)}
+.btn-sm{padding:4px 10px;font-size:12px}
+.btn-danger{background:var(--red-light);color:var(--red);border-color:#f5c6c6}
+.btn svg{width:14px;height:14px}
+
+/* ── PILLS / BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-teal{background:var(--teal-light);color:var(--teal-dark)}
+.badge-amber{background:var(--amber-light);color:var(--amber)}
+.badge-red{background:var(--red-light);color:var(--red)}
+.badge-purple{background:var(--purple-light);color:var(--purple)}
+.badge-gray{background:var(--gray-pill);color:var(--text2)}
+.badge-blue{background:var(--blue-light);color:var(--blue)}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:14px;font-weight:600;color:var(--text)}
+.card-body{padding:20px}
+
+/* ══════════════════════════════════════
+   SCREEN 1 — TEAM / USERS
+══════════════════════════════════════ */
+.user-table{width:100%;border-collapse:collapse}
+.user-table th{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);padding:10px 16px;border-bottom:1px solid var(--border);text-align:left}
+.user-table td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)}
+.user-table tr:last-child td{border-bottom:none}
+.user-table tr:hover td{background:var(--surface2)}
+.user-avatar{width:30px;height:30px;border-radius:50%;font-size:12px;font-weight:600;color:white;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.user-row-name{display:flex;align-items:center;gap:10px}
+.user-name-text{font-weight:500;color:var(--text)}
+.user-email{font-size:11px;color:var(--text3)}
+
+.role-select{padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface);font-family:var(--font);font-size:12px;color:var(--text);cursor:pointer;outline:none}
+.role-select:focus{border-color:var(--teal)}
+
+/* ══════════════════════════════════════
+   SCREEN 2 — ROLES OVERVIEW
+══════════════════════════════════════ */
+.roles-grid{display:grid;gap:12px}
+.roles-grid.boatyard-grid{grid-template-columns:repeat(4,1fr)}
+.roles-grid.yiq-grid{grid-template-columns:repeat(3,1fr)}
+.role-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;cursor:pointer;transition:all .15s;position:relative}
+.role-card:hover{border-color:var(--teal-mid);box-shadow:var(--shadow)}
+.role-card.selected{border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,124,107,.1)}
+.role-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.role-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.role-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px}
+.role-desc{font-size:12px;color:var(--text3);line-height:1.4}
+.role-meta{margin-top:12px;padding-top:10px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.role-user-count{font-size:12px;color:var(--text3)}
+.role-brand-tag{font-size:10px;font-weight:600;letter-spacing:.04em;padding:2px 7px;border-radius:10px}
+.brand-nj{background:#EEF2FF;color:#4338CA}
+.brand-fraser{background:#FFF7ED;color:#C2410C}
+.brand-vendor{background:var(--gray-pill);color:var(--text2)}
+
+/* Capabilities mini-bar */
+.cap-bar{margin-top:10px}
+.cap-bar-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:5px}
+.cap-dots{display:flex;gap:3px;flex-wrap:wrap}
+.cap-dot{width:8px;height:8px;border-radius:2px}
+.cap-on{background:var(--teal)}
+.cap-partial{background:var(--amber-mid)}
+.cap-off{background:var(--border)}
+
+/* ══════════════════════════════════════
+   SCREEN 3 — ROLE EDITOR (BOATYARD)
+══════════════════════════════════════ */
+.editor-layout{display:grid;grid-template-columns:240px 1fr;gap:20px;align-items:start}
+.editor-sidebar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;position:sticky;top:0}
+.editor-sidebar-head{padding:14px 16px;border-bottom:1px solid var(--border)}
+.editor-role-name{font-size:14px;font-weight:600;color:var(--text)}
+.editor-role-type{font-size:11px;color:var(--text3);margin-top:1px}
+.editor-nav-item{display:flex;align-items:center;gap:8px;padding:9px 16px;font-size:13px;color:var(--text2);cursor:pointer;transition:background .12s;border-left:2px solid transparent}
+.editor-nav-item:hover{background:var(--surface2)}
+.editor-nav-item.active{color:var(--teal);background:var(--teal-light);border-left-color:var(--teal)}
+.editor-nav-item svg{width:14px;height:14px}
+
+.perm-section{margin-bottom:20px}
+.perm-section-title{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+.perm-row{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;transition:border-color .12s}
+.perm-row:hover{border-color:var(--border2)}
+.perm-row-info{}
+.perm-row-name{font-size:13px;font-weight:500;color:var(--text)}
+.perm-row-desc{font-size:11px;color:var(--text3);margin-top:1px}
+
+/* Toggle */
+.toggle-wrap{display:flex;align-items:center;gap:8px}
+.toggle{position:relative;width:36px;height:20px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;inset:0;border-radius:10px;background:var(--border2);cursor:pointer;transition:background .15s}
+.toggle-slider:before{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:white;left:3px;top:3px;transition:transform .15s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle input:checked + .toggle-slider{background:var(--teal)}
+.toggle input:checked + .toggle-slider:before{transform:translateX(16px)}
+
+/* ══════════════════════════════════════
+   SCREEN 4 — ROLE EDITOR (YIQ GRANULAR)
+══════════════════════════════════════ */
+.yiq-editor-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.yiq-editor-tabs{display:flex;gap:2px;background:var(--surface2);border-radius:var(--radius);padding:3px}
+.yiq-tab{padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;border:none;background:transparent;font-family:var(--font);transition:all .12s}
+.yiq-tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+/* Entity permission rows */
+.entity-group{margin-bottom:4px}
+.entity-header{display:grid;grid-template-columns:220px 1fr;align-items:center;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all .12s;user-select:none}
+.entity-header:hover{background:var(--surface2)}
+.entity-header.open{border-radius:var(--radius) var(--radius) 0 0;border-bottom:none;background:var(--teal-light)}
+.entity-name{font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:7px}
+.entity-caret{font-size:11px;color:var(--text3);transition:transform .15s}
+.entity-caret.open{transform:rotate(90deg)}
+.entity-actions{display:flex;gap:6px;flex-wrap:wrap}
+
+.action-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid;transition:all .12s;user-select:none}
+.action-on{background:var(--teal-light);border-color:var(--teal-mid);color:var(--teal-dark)}
+.action-off{background:var(--surface2);border-color:var(--border);color:var(--text3)}
+.action-on:hover{background:var(--teal-mid)}
+.action-off:hover{background:var(--border);color:var(--text2)}
+
+.entity-body{border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);overflow:hidden;display:none}
+.entity-body.open{display:block}
+.entity-sub-row{display:grid;grid-template-columns:220px 1fr auto;align-items:center;padding:9px 14px 9px 30px;border-bottom:1px solid var(--border);font-size:12px}
+.entity-sub-row:last-child{border-bottom:none}
+.entity-sub-row:hover{background:var(--surface2)}
+.sub-field-name{color:var(--text2);font-weight:400;display:flex;align-items:center;gap:6px}
+.sub-field-name code{font-family:var(--mono);font-size:11px;color:var(--text3);background:var(--surface2);padding:1px 5px;border-radius:4px}
+
+/* Scope selector */
+.scope-select{padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface);font-family:var(--font);font-size:11px;color:var(--text);cursor:pointer;outline:none;min-width:110px}
+.scope-select:focus{border-color:var(--teal)}
+.scope-indicator{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 8px;border-radius:20px;border:1px dashed var(--border2);color:var(--text3);cursor:pointer;transition:all .12s}
+.scope-indicator:hover{background:var(--surface2);border-color:var(--teal-mid);color:var(--teal)}
+
+/* Data scope banner */
+.scope-banner{background:var(--amber-light);border:1px solid var(--amber-mid);border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px}
+.scope-banner-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.scope-banner-text{font-size:12px;color:var(--amber);line-height:1.5}
+.scope-banner-text strong{font-weight:600}
+
+/* Scope row */
+.scope-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px}
+.scope-action-label{font-size:13px;font-weight:600;color:var(--text);width:60px}
+.scope-ladder{display:flex;gap:4px;flex:1}
+.scope-step{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text3);transition:all .12s;user-select:none}
+.scope-step.active{border-color:transparent;color:white}
+.scope-step-authored.active{background:#7C3AED}
+.scope-step-brand.active{background:#0369A1}
+.scope-step-cross.active{background:#0D7C6B}
+.scope-step-all.active{background:#1A1915}
+.scope-step:hover:not(.active){background:var(--border);color:var(--text)}
+.scope-desc{font-size:11px;color:var(--text3);max-width:180px;line-height:1.4}
+
+/* ══════════════════════════════════════
+   MODAL
+══════════════════════════════════════ */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.3);backdrop-filter:blur(2px);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-backdrop.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border-radius:var(--radius-lg);width:460px;max-width:90vw;box-shadow:var(--shadow-lg);transform:translateY(8px);transition:transform .2s;overflow:hidden}
+.modal-backdrop.open .modal{transform:translateY(0)}
+.modal-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:15px;font-weight:600;color:var(--text)}
+.modal-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3);padding:2px 6px;border-radius:4px}
+.modal-close:hover{background:var(--surface2);color:var(--text)}
+.modal-body{padding:20px}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+
+.form-field{margin-bottom:16px}
+.form-label{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block}
+.form-input{width:100%;padding:8px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-family:var(--font);font-size:13px;color:var(--text);outline:none;background:var(--surface);transition:border-color .12s}
+.form-input:focus{border-color:var(--teal)}
+.form-select{width:100%;padding:8px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-family:var(--font);font-size:13px;color:var(--text);outline:none;background:var(--surface);cursor:pointer}
+.form-select:focus{border-color:var(--teal)}
+
+/* ══════════════════════════════════════
+   ANNOTATIONS (designer guidance)
+══════════════════════════════════════ */
+.annotation{position:relative}
+.ann-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#FEF3C7;border:1px dashed #F59E0B;border-radius:4px;font-size:10px;font-weight:600;color:#92400E;letter-spacing:.04em;cursor:help}
+.ann-tooltip{position:absolute;bottom:calc(100% + 6px);left:0;background:var(--text);color:white;font-size:11px;padding:7px 10px;border-radius:6px;width:220px;line-height:1.5;z-index:100;opacity:0;pointer-events:none;transition:opacity .15s;white-space:normal}
+.annotation:hover .ann-tooltip{opacity:1}
+
+/* ══════════════════════════════════════
+   EMPTY / MISC
+══════════════════════════════════════ */
+.divider{height:1px;background:var(--border);margin:20px 0}
+.flex-between{display:flex;align-items:center;justify-content:space-between}
+.flex-gap{display:flex;align-items:center;gap:8px}
+.text-muted{color:var(--text3);font-size:12px}
+.mt-4{margin-top:4px}
+.mt-8{margin-top:8px}
+.mt-16{margin-top:16px}
+.mb-16{margin-bottom:16px}
+
+/* ── SCREEN LABEL ── */
+.screen-label{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:3px 10px;margin-bottom:16px}
+.screen-label .dot{width:6px;height:6px;border-radius:50%;background:var(--teal)}
+
+/* ── CALLOUT ── */
+.callout{padding:12px 16px;border-radius:var(--radius);border-left:3px solid;margin-bottom:16px;font-size:12px;line-height:1.6}
+.callout-teal{background:var(--teal-light);border-color:var(--teal);color:var(--teal-dark)}
+.callout-amber{background:var(--amber-light);border-color:var(--amber);color:#78420C}
+.callout strong{font-weight:600}
+
+.perm-row-locked{opacity:.5;pointer-events:none}
+.lock-icon{font-size:12px;color:var(--text3)}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ── LEFT NAV ── -->
+  <nav class="leftnav">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 17l4-8 4 4 4-6 4 10H3z"/></svg>
+      </div>
+      <div>
+        <div class="brand-name" id="brand-name">Boatyard<span id="brand-sub">Sales Platform</span></div>
+      </div>
+    </div>
+
+    <!-- product switch -->
+    <div style="padding:10px 12px 4px">
+      <div class="product-switch">
+        <button class="product-btn active" id="sw-by" onclick="switchProduct('boatyard')">Boatyard</button>
+        <button class="product-btn" id="sw-yiq" onclick="switchProduct('yiq')">YIQ</button>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Settings</div>
+      <button class="nav-item" onclick="showView('users')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Team &amp; Users
+      </button>
+      <button class="nav-item" onclick="showView('roles')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Roles
+      </button>
+      <button class="nav-item active" id="nav-editor" onclick="showView('editor')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Permissions
+      </button>
+    </div>
+
+    <div class="nav-section" id="yiq-nav" style="display:none">
+      <div class="nav-label">YIQ Only</div>
+      <button class="nav-item" onclick="showView('yiq-granular')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+        Granular Editor
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── MAIN ── -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Settings — Permissions</div>
+      <div class="topbar-right">
+        <span class="tenant-badge" id="tenant-badge">🏢 Acme Marine Co.</span>
+        <div class="avatar-sm">JA</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ══ VIEW: USERS ══ -->
+      <div class="view active" id="view-users">
+        <div class="screen-label"><span class="dot"></span>Screen 1 — Team &amp; Users</div>
+        <div class="flex-between mb-16">
+          <div class="page-header" style="margin:0">
+            <div class="page-title">Team members</div>
+            <div class="page-sub" id="users-sub">8 members · Acme Marine Co.</div>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('invite')">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Invite user
+          </button>
+        </div>
+
+        <div class="callout callout-teal">
+          <strong>Least privilege by default.</strong> New users are assigned the <strong id="default-role-name">Viewer</strong> role automatically. Elevate permissions explicitly after onboarding.
+        </div>
+
+        <div class="card">
+          <table class="user-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th id="th-brand" style="display:none">Brand scope</th>
+                <th>Last active</th>
+                <th style="width:80px"></th>
+              </tr>
+            </thead>
+            <tbody id="user-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="annotation mt-8">
+          <span class="ann-badge">💡 Design note — role column</span>
+          <div class="ann-tooltip">Role change should trigger a confirmation if demoting someone — losing access is irreversible in most workflows.</div>
+        </div>
+      </div>
+
+      <!-- ══ VIEW: ROLES OVERVIEW ══ -->
+      <div class="view" id="view-roles">
+        <div class="screen-label"><span class="dot"></span>Screen 2 — Roles Overview</div>
+        <div class="flex-between mb-16">
+          <div class="page-header" style="margin:0">
+            <div class="page-title">Roles</div>
+            <div class="page-sub" id="roles-sub">Compare access levels across roles</div>
+          </div>
+          <button class="btn btn-secondary" onclick="showView('editor')">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit permissions
+          </button>
+        </div>
+        <div class="roles-grid boatyard-grid" id="roles-grid"></div>
+
+        <div class="annotation mt-16">
+          <span class="ann-badge">💡 Design note — card density</span>
+          <div class="ann-tooltip">For YIQ's 9 roles, consider a list/table view as an alternative to cards. Cards work well for ≤6 roles.</div>
+        </div>
+      </div>
+
+      <!-- ══ VIEW: BOATYARD EDITOR ══ -->
+      <div class="view" id="view-editor">
+        <div class="screen-label"><span class="dot"></span>Screen 3a — Permission Editor (Boatyard — simple)</div>
+        <div class="flex-between mb-16">
+          <div class="page-header" style="margin:0">
+            <div class="page-title">Configure: <span id="editing-role-name" style="color:var(--teal)">Editor</span></div>
+            <div class="page-sub">Toggle which sections and features this role can access</div>
+          </div>
+          <div class="flex-gap">
+            <button class="btn btn-secondary btn-sm" onclick="showView('roles')">← Back to roles</button>
+            <button class="btn btn-primary btn-sm" onclick="showSaved()">Save changes</button>
+          </div>
+        </div>
+
+        <div class="callout callout-amber">
+          <strong>Progressive disclosure principle:</strong> Boatyard admins only see section-level toggles. YIQ's action/field/scope layers are hidden here — same UI component, different depth.
+        </div>
+
+        <div class="editor-layout">
+          <!-- Sidebar role selector -->
+          <div class="editor-sidebar">
+            <div class="editor-sidebar-head">
+              <div class="editor-role-name">Select role to edit</div>
+              <div class="editor-role-type text-muted" id="current-product-label">Boatyard · 4 roles</div>
+            </div>
+            <div id="editor-role-list"></div>
+          </div>
+
+          <!-- Permission panels -->
+          <div>
+            <div class="perm-section">
+              <div class="perm-section-title">Navigation &amp; Sections</div>
+              <div id="perm-nav-rows"></div>
+            </div>
+            <div class="perm-section">
+              <div class="perm-section-title">Actions &amp; Features</div>
+              <div id="perm-action-rows"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ VIEW: YIQ GRANULAR EDITOR ══ -->
+      <div class="view" id="view-yiq-granular">
+        <div class="screen-label"><span class="dot"></span>Screen 3b — Permission Editor (YIQ — granular)</div>
+        <div class="flex-between mb-16">
+          <div class="page-header" style="margin:0">
+            <div class="page-title">Configure: <span style="color:var(--teal)">N&amp;J Broker</span></div>
+            <div class="page-sub">Entity-level · action-level · field-level · data scope</div>
+          </div>
+          <div class="flex-gap">
+            <button class="btn btn-secondary btn-sm">← Back to roles</button>
+            <button class="btn btn-primary btn-sm" onclick="showSaved()">Save changes</button>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex-between mb-16">
+          <div class="yiq-editor-tabs">
+            <button class="yiq-tab active" onclick="switchYiqTab('entities',this)">Entity &amp; Actions</button>
+            <button class="yiq-tab" onclick="switchYiqTab('scope',this)">Data Scope</button>
+            <button class="yiq-tab" onclick="switchYiqTab('fields',this)">Field Visibility</button>
+          </div>
+          <div class="flex-gap">
+            <span class="badge badge-teal">N&amp;J Broker</span>
+            <span class="badge badge-gray">Brand-scoped role</span>
+          </div>
+        </div>
+
+        <!-- Tab: Entities -->
+        <div id="yiq-tab-entities">
+          <div class="callout callout-teal">
+            <strong>How to read this:</strong> Click an entity row to expand it and see action-level permissions. Green chips = enabled. Click any chip to toggle. Each action can also carry a Data Scope — set that in the Data Scope tab.
+          </div>
+          <div id="entity-rows"></div>
+        </div>
+
+        <!-- Tab: Scope -->
+        <div id="yiq-tab-scope" style="display:none">
+          <div class="scope-banner">
+            <span class="scope-banner-icon">⚡</span>
+            <div class="scope-banner-text">
+              <strong>Data Scope is independent of the action permission.</strong> Even if this role can "delete", the scope controls <em>how much</em> they can delete — only their own content (Authored), their brand's content (Brand), all brands (Cross-Brand), or everything (All).
+            </div>
+          </div>
+          <div id="scope-rows"></div>
+          <div class="annotation mt-8">
+            <span class="ann-badge">💡 Design note — scope ladder</span>
+            <div class="ann-tooltip">The 4 scopes form a clear ladder from most restrictive to most open. A segmented control communicates this spectrum better than a dropdown.</div>
+          </div>
+        </div>
+
+        <!-- Tab: Fields -->
+        <div id="yiq-tab-fields" style="display:none">
+          <div class="callout callout-amber">
+            <strong>Field-level control (YIQ only):</strong> For each entity, configure whether a field is hidden, visible read-only, or fully editable. This mirrors exactly what the user sees in the UI — no field is shown that the role cannot access.
+          </div>
+          <div id="field-rows"></div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- ══ INVITE MODAL ══ -->
+<div class="modal-backdrop" id="modal-invite">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Invite new user</span>
+      <button class="modal-close" onclick="closeModal('invite')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label class="form-label">Email address</label>
+        <input class="form-input" type="email" placeholder="colleague@company.com">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Role</label>
+        <select class="form-select" id="invite-role-select"></select>
+      </div>
+      <div class="form-field" id="invite-brand-field" style="display:none">
+        <label class="form-label">Brand scope</label>
+        <select class="form-select">
+          <option>N&amp;J (Northrop &amp; Johnson)</option>
+          <option>Fraser Yachts</option>
+          <option>Vendor-agnostic (both brands)</option>
+        </select>
+      </div>
+      <div class="callout callout-teal" style="margin:0">
+        An invitation email will be sent. They will start with the selected role on first login.
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal('invite')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('invite')">Send invitation</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SAVED TOAST ══ -->
+<div id="saved-toast" style="position:fixed;bottom:24px;right:24px;background:var(--teal);color:white;padding:10px 18px;border-radius:var(--radius);font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .2s;z-index:300">
+  ✓ Changes saved
+</div>
+
+<script>
+// ══ DATA ══
+const PRODUCTS = {
+  boatyard: {
+    name: 'Boatyard', sub: 'Sales Platform',
+    tenant: '🏢 Acme Marine Co.',
+    defaultRole: 'Viewer',
+    roles: [
+      { id:'system', name:'System', desc:'Full access. Manages users and all settings.', color:'#1A1915', users:1 },
+      { id:'admin',  name:'Admin',  desc:'Company admin. Manages users and roles.', color:'#0D7C6B', users:2 },
+      { id:'editor', name:'Editor', desc:'Can create and edit content. No settings access.', color:'#2563EB', users:5 },
+      { id:'viewer', name:'Viewer', desc:'Read-only. Default for new users.', color:'#9B9890', users:8 },
+    ],
+    users: [
+      { name:'James Alcott', email:'james@acme.com', role:'admin', avatar:'JA', color:'#1E40AF', last:'Today' },
+      { name:'Sara Lin', email:'sara@acme.com', role:'editor', avatar:'SL', color:'#0D7C6B', last:'Yesterday' },
+      { name:'Marcus Webb', email:'marcus@acme.com', role:'editor', avatar:'MW', color:'#7C3AED', last:'2d ago' },
+      { name:'Priya Nair', email:'priya@acme.com', role:'viewer', avatar:'PN', color:'#C97D1A', last:'3d ago' },
+      { name:'Tom Chen', email:'tom@acme.com', role:'viewer', avatar:'TC', color:'#DC2626', last:'1w ago' },
+    ],
+    permNav: [
+      { id:'dashboard', name:'Dashboard', desc:'Main overview and analytics', locked:false },
+      { id:'inventory', name:'Inventory', desc:'Vehicle/vessel listings', locked:false },
+      { id:'deals', name:'Deals & Contracts', desc:'Sales pipeline and documents', locked:false },
+      { id:'reports', name:'Reports', desc:'Revenue and performance reports', locked:false },
+      { id:'emails', name:'Emails', desc:'Email campaigns and templates', locked:false },
+    ],
+    permAction: [
+      { id:'create', name:'Create records', desc:'Add new vehicles, deals, customers', locked:false },
+      { id:'edit', name:'Edit records', desc:'Modify existing entries', locked:false },
+      { id:'delete', name:'Delete records', desc:'Permanently remove entries', locked:false },
+      { id:'export', name:'Export data', desc:'Download CSV / PDF exports', locked:false },
+      { id:'settings', name:'Access settings', desc:'Team and configuration pages', locked:true, reason:'Admin+ only' },
+    ],
+    roleDefaults: {
+      system: { dashboard:true, inventory:true, deals:true, reports:true, emails:true, create:true, edit:true, delete:true, export:true, settings:true },
+      admin:  { dashboard:true, inventory:true, deals:true, reports:true, emails:true, create:true, edit:true, delete:false, export:true, settings:true },
+      editor: { dashboard:true, inventory:true, deals:true, reports:false, emails:true, create:true, edit:true, delete:false, export:false, settings:false },
+      viewer: { dashboard:true, inventory:true, deals:false, reports:false, emails:false, create:false, edit:false, delete:false, export:false, settings:false },
+    }
+  },
+  yiq: {
+    name: 'YachtIQ', sub: 'YIQ Platform',
+    tenant: '⛵ YachtIQ Internal',
+    defaultRole: 'View-Only',
+    roles: [
+      { id:'system',   name:'System',       desc:'Unrestricted. Manages all roles and settings.', color:'#1A1915', users:1, brand:'vendor' },
+      { id:'datateam', name:'Data Team',     desc:'Elevated ops, cross-brand. No role management.', color:'#0D7C6B', users:3, brand:'vendor' },
+      { id:'support',  name:'Team Support',  desc:'Vendor-agnostic, limited vs Data Team.', color:'#2563EB', users:4, brand:'vendor' },
+      { id:'viewonly', name:'View-Only',     desc:'Default role. Read-only across entities.', color:'#9B9890', users:12, brand:'vendor' },
+      { id:'njbroker', name:'N&J Broker',    desc:'Full permissions for N&J scoped data.', color:'#4338CA', users:6, brand:'nj' },
+      { id:'njview',   name:'N&J View-Only', desc:'Read-only for N&J brand data.', color:'#7C3AED', users:4, brand:'nj' },
+      { id:'fbroker',  name:'Fraser Broker', desc:'Full permissions for Fraser scoped data.', color:'#C2410C', users:5, brand:'fraser' },
+      { id:'fview',    name:'Fraser View-Only', desc:'Read-only for Fraser brand data.', color:'#EA580C', users:3, brand:'fraser' },
+    ],
+    users: [
+      { name:'Elena Vasquez', email:'elena@yiq.com', role:'system', avatar:'EV', color:'#1A1915', last:'Today', brand:'Vendor' },
+      { name:'Amit Patel', email:'amit@yiq.com', role:'datateam', avatar:'AP', color:'#0D7C6B', last:'Today', brand:'Vendor' },
+      { name:'Claire Dubois', email:'claire@nj.com', role:'njbroker', avatar:'CD', color:'#4338CA', last:'Yesterday', brand:'N&J' },
+      { name:'Hugo Fraser', email:'hugo@fraser.com', role:'fbroker', avatar:'HF', color:'#C2410C', last:'2d ago', brand:'Fraser' },
+      { name:'Yuki Tanaka', email:'yuki@yiq.com', role:'viewonly', avatar:'YT', color:'#9B9890', last:'4d ago', brand:'Vendor' },
+    ],
+  }
+};
+
+const YIQ_ENTITIES = [
+  { name:'Yachts', icon:'⛵', actions:['view','create','update','delete'],
+    defaults:{view:true,create:false,update:true,delete:false},
+    fields:['Name','LOA','Beam','Price (asking)','Price (asking – broker)','Owner contact','Builder','Year built'] },
+  { name:'Yacht Notes', icon:'📝', actions:['view','create','update','delete'],
+    defaults:{view:true,create:true,update:true,delete:false},
+    fields:['Note body','Note type','Visibility','Author','Created date'] },
+  { name:'Yacht Lists', icon:'📋', actions:['view','create','update','delete'],
+    defaults:{view:true,create:true,update:true,delete:false},
+    fields:['List name','Yachts included','Brand scope','Owner'] },
+  { name:'Yacht Shows', icon:'🏆', actions:['view','create','update'],
+    defaults:{view:true,create:false,update:false},
+    fields:['Show name','Date','Location','Notes','Map'] },
+  { name:'Emails', icon:'✉️', actions:['view','create','send','delete'],
+    defaults:{view:true,create:true,send:true,delete:false},
+    fields:['Subject','Body','Recipients','Scheduled date','Template'] },
+  { name:'Shipyards', icon:'🏗️', actions:['view','upload','download','delete'],
+    defaults:{view:true,create:false,upload:false,download:true,delete:false},
+    fields:['Builder name','Models','Documents','Last updated'] },
+];
+
+const YIQ_SCOPE_ACTIONS = [
+  { action:'Read', default:'brand', desc:'What data this role can read / view' },
+  { action:'Write', default:'authored', desc:'What data this role can create or update' },
+  { action:'Delete', default:'authored', desc:'What data this role can delete' },
+];
+const SCOPES = ['authored','brand','cross','all'];
+const SCOPE_LABELS = { authored:'Authored', brand:'Brand', cross:'Cross-Brand', all:'All' };
+const SCOPE_DESC = {
+  authored:'Only content they personally created',
+  brand:'Their own + brand-specific content from their brand',
+  cross:'Their own + brand-specific content across all brands',
+  all:'No restrictions — full access'
+};
+
+const FIELD_MODES = ['hidden','view','edit'];
+
+// ── STATE ──
+let currentProduct = 'boatyard';
+let currentView = 'editor';
+let editingRole = 'editor';
+let permState = JSON.parse(JSON.stringify(PRODUCTS.boatyard.roleDefaults));
+let yiqScopes = { read:'brand', write:'authored', delete:'authored' };
+let yiqActions = {};
+let fieldStates = {};
+YIQ_ENTITIES.forEach(e => {
+  yiqActions[e.name] = Object.assign({}, e.defaults);
+  fieldStates[e.name] = {};
+  e.fields.forEach(f => fieldStates[e.name][f] = 'view');
+});
+
+// ── INIT ──
+function init() {
+  renderUsers();
+  renderRoles();
+  renderEditorSidebar();
+  renderPermissions();
+  renderEntityRows();
+  renderScopeRows();
+  renderFieldRows();
+  setActiveNav('editor');
+}
+
+// ── PRODUCT SWITCH ──
+function switchProduct(p) {
+  currentProduct = p;
+  const d = PRODUCTS[p];
+  document.getElementById('brand-name').childNodes[0].textContent = d.name;
+  document.getElementById('brand-sub').textContent = d.sub;
+  document.getElementById('tenant-badge').textContent = d.tenant;
+  document.getElementById('sw-by').classList.toggle('active', p==='boatyard');
+  document.getElementById('sw-yiq').classList.toggle('active', p==='yiq');
+  document.getElementById('yiq-nav').style.display = p==='yiq' ? 'block' : 'none';
+  document.getElementById('th-brand').style.display = p==='yiq' ? '' : 'none';
+  document.getElementById('users-sub').textContent = p==='boatyard'
+    ? `${PRODUCTS.boatyard.users.length} members · Acme Marine Co.`
+    : `${PRODUCTS.yiq.users.length} members · YachtIQ Internal`;
+  document.getElementById('default-role-name').textContent = d.defaultRole;
+  document.getElementById('roles-sub').textContent = p==='boatyard'
+    ? '4 roles — simple section/feature access'
+    : '9 roles — entity × action × field × data scope';
+  document.getElementById('current-product-label').textContent = p==='boatyard'
+    ? 'Boatyard · 4 roles'
+    : 'YIQ · 9 roles';
+
+  const rg = document.getElementById('roles-grid');
+  rg.className = 'roles-grid ' + (p==='boatyard' ? 'boatyard-grid' : 'yiq-grid');
+
+  if (p==='yiq') editingRole = 'system';
+  else editingRole = 'editor';
+
+  renderUsers();
+  renderRoles();
+  renderEditorSidebar();
+  renderPermissions();
+  populateInviteRoles();
+}
+
+// ── NAV ──
+function showView(v) {
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-' + v).classList.add('active');
+  setActiveNav(v);
+  currentView = v;
+  const titles = {
+    users:'Settings — Team & Users',
+    roles:'Settings — Roles',
+    editor:'Settings — Permissions',
+    'yiq-granular':'Settings — Granular Permissions (YIQ)'
+  };
+  document.getElementById('topbar-title').textContent = titles[v] || 'Settings';
+}
+function setActiveNav(v) {
+  const map = { users:0, roles:1, editor:2, 'yiq-granular':3 };
+  const items = document.querySelectorAll('.nav-item');
+  items.forEach((el,i) => el.classList.toggle('active', i === (map[v]??2)));
+}
+
+// ── USERS ──
+const ROLE_COLORS = { system:'#1A1915', admin:'#0D7C6B', editor:'#2563EB', viewer:'#9B9890', datateam:'#0D7C6B', support:'#2563EB', viewonly:'#9B9890', njbroker:'#4338CA', njview:'#7C3AED', fbroker:'#C2410C', fview:'#EA580C' };
+const ROLE_NAMES_MAP = { system:'System', admin:'Admin', editor:'Editor', viewer:'Viewer', datateam:'Data Team', support:'Team Support', viewonly:'View-Only', njbroker:'N&J Broker', njview:'N&J View-Only', fbroker:'Fraser Broker', fview:'Fraser View-Only' };
+
+function renderUsers() {
+  const p = PRODUCTS[currentProduct];
+  const tbody = document.getElementById('user-tbody');
+  const roles = p.roles;
+  tbody.innerHTML = p.users.map(u => `
+    <tr>
+      <td>
+        <div class="user-row-name">
+          <div class="user-avatar" style="background:${u.color}">${u.avatar}</div>
+          <div>
+            <div class="user-name-text">${u.name}</div>
+            <div class="user-email">${u.email}</div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <select class="role-select" style="border-left:3px solid ${ROLE_COLORS[u.role]||'#ccc'}">
+          ${roles.map(r=>`<option value="${r.id}" ${r.id===u.role?'selected':''}>${r.name}</option>`).join('')}
+        </select>
+      </td>
+      ${currentProduct==='yiq' ? `<td><span class="badge badge-gray">${u.brand||'—'}</span></td>` : ''}
+      <td class="text-muted">${u.last}</td>
+      <td>
+        <button class="btn btn-ghost btn-sm" style="color:var(--red);font-size:11px">Remove</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ── ROLES ──
+const CAP_ENTITIES = ['Dashboard','Yachts','Lists','Shows','Emails','Shipyards','Matches'];
+function capsForRole(rid) {
+  const on = [true,true,true,true,false,false,false];
+  const maps = {
+    system:[true,true,true,true,true,true,true],
+    admin:[true,true,true,true,true,true,false],
+    editor:[true,true,true,false,true,false,false],
+    viewer:[true,true,false,false,false,false,false],
+    datateam:[true,true,true,true,true,true,true],
+    support:[true,true,true,true,true,false,false],
+    viewonly:[true,true,false,false,false,false,false],
+    njbroker:[true,true,true,true,true,false,false],
+    njview:[true,true,true,false,false,false,false],
+    fbroker:[true,true,true,true,true,false,false],
+    fview:[true,true,true,false,false,false,false],
+  };
+  return maps[rid] || on;
+}
+const BRAND_LABELS = { nj:'N&J', fraser:'Fraser', vendor:'Vendor-agnostic' };
+
+function renderRoles() {
+  const p = PRODUCTS[currentProduct];
+  const grid = document.getElementById('roles-grid');
+  grid.innerHTML = p.roles.map(r => {
+    const caps = capsForRole(r.id);
+    const brand = r.brand ? `<span class="role-brand-tag brand-${r.brand}">${BRAND_LABELS[r.brand]}</span>` : '';
+    return `
+      <div class="role-card" onclick="selectRole('${r.id}')">
+        <div class="role-card-header">
+          <div>
+            <div class="role-name">${r.name}</div>
+            <div class="role-desc">${r.desc}</div>
+          </div>
+          <div class="role-dot" style="background:${r.color}"></div>
+        </div>
+        <div class="cap-bar">
+          <div class="cap-bar-label">Access coverage</div>
+          <div class="cap-dots">
+            ${CAP_ENTITIES.map((e,i) => `<div class="cap-dot ${caps[i]?'cap-on':'cap-off'}" title="${e}"></div>`).join('')}
+          </div>
+        </div>
+        <div class="role-meta">
+          <span class="text-muted">${r.users} users</span>
+          ${brand}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function selectRole(rid) {
+  editingRole = rid;
+  showView('editor');
+  document.getElementById('editing-role-name').textContent = ROLE_NAMES_MAP[rid] || rid;
+  renderEditorSidebar();
+  renderPermissions();
+}
+
+// ── EDITOR SIDEBAR ──
+function renderEditorSidebar() {
+  const p = PRODUCTS[currentProduct];
+  const list = document.getElementById('editor-role-list');
+  list.innerHTML = p.roles.map(r => `
+    <div class="editor-nav-item ${r.id===editingRole?'active':''}" onclick="selectRole('${r.id}')">
+      <span style="width:8px;height:8px;border-radius:50%;background:${r.color};display:inline-block;flex-shrink:0"></span>
+      ${r.name}
+    </div>
+  `).join('');
+}
+
+// ── PERMISSIONS (BOATYARD) ──
+function renderPermissions() {
+  if (currentProduct !== 'boatyard') return;
+  const p = PRODUCTS.boatyard;
+  const state = permState[editingRole] || {};
+  const isSystem = editingRole === 'system';
+
+  document.getElementById('perm-nav-rows').innerHTML = p.permNav.map(perm => `
+    <div class="perm-row ${isSystem?'perm-row-locked':''}">
+      <div>
+        <div class="perm-row-name">${perm.name} ${isSystem?'<span class="lock-icon" title="System always has full access">🔒</span>':''}</div>
+        <div class="perm-row-desc">${perm.desc}</div>
+      </div>
+      <label class="toggle"><input type="checkbox" ${state[perm.id]?'checked':''} onchange="togglePerm('${perm.id}',this.checked)"><span class="toggle-slider"></span></label>
+    </div>
+  `).join('');
+
+  document.getElementById('perm-action-rows').innerHTML = p.permAction.map(perm => `
+    <div class="perm-row ${(perm.locked||isSystem)?'perm-row-locked':''}">
+      <div>
+        <div class="perm-row-name">${perm.name} ${perm.locked?`<span class="badge badge-gray" style="font-size:10px">${perm.reason}</span>`:''} ${isSystem?'<span class="lock-icon">🔒</span>':''}</div>
+        <div class="perm-row-desc">${perm.desc}</div>
+      </div>
+      <label class="toggle"><input type="checkbox" ${state[perm.id]?'checked':''} onchange="togglePerm('${perm.id}',this.checked)"><span class="toggle-slider"></span></label>
+    </div>
+  `).join('');
+}
+
+function togglePerm(id, val) {
+  if (!permState[editingRole]) permState[editingRole] = {};
+  permState[editingRole][id] = val;
+}
+
+// ── YIQ ENTITY ROWS ──
+let openEntities = {};
+function renderEntityRows() {
+  const wrap = document.getElementById('entity-rows');
+  wrap.innerHTML = YIQ_ENTITIES.map(e => {
+    const isOpen = openEntities[e.name];
+    const acts = yiqActions[e.name];
+    return `
+      <div class="entity-group" style="margin-bottom:6px">
+        <div class="entity-header ${isOpen?'open':''}" onclick="toggleEntity('${e.name}')">
+          <div class="entity-name">
+            <span class="entity-caret ${isOpen?'open':''}">▶</span>
+            ${e.icon} ${e.name}
+          </div>
+          <div class="entity-actions">
+            ${e.actions.map(a => `
+              <span class="action-chip ${acts[a]?'action-on':'action-off'}" onclick="event.stopPropagation();toggleAction('${e.name}','${a}')">${a}</span>
+            `).join('')}
+          </div>
+        </div>
+        <div class="entity-body ${isOpen?'open':''}" id="entity-body-${e.name.replace(/\s/g,'_')}">
+          ${e.actions.map(a => `
+            <div class="entity-sub-row">
+              <div class="sub-field-name"><code>${e.name.toLowerCase().replace(/\s/g,'_')}</code> → ${a}</div>
+              <div><span class="action-chip ${acts[a]?'action-on':'action-off'}" onclick="toggleAction('${e.name}','${a}')">${acts[a]?'Enabled':'Disabled'}</span></div>
+              <div>
+                <span class="scope-indicator" title="Set scope in Data Scope tab">
+                  ${SCOPE_LABELS[yiqScopes[a==='delete'?'delete':a==='view'?'read':'write']]} ↗
+                </span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleEntity(name) {
+  openEntities[name] = !openEntities[name];
+  renderEntityRows();
+}
+function toggleAction(entity, action) {
+  yiqActions[entity][action] = !yiqActions[entity][action];
+  renderEntityRows();
+}
+
+// ── SCOPE ROWS ──
+function renderScopeRows() {
+  const wrap = document.getElementById('scope-rows');
+  wrap.innerHTML = YIQ_SCOPE_ACTIONS.map(s => {
+    const key = s.action.toLowerCase();
+    const cur = yiqScopes[key] || s.default;
+    return `
+      <div class="scope-row">
+        <div class="scope-action-label">${s.action}</div>
+        <div class="scope-ladder">
+          ${SCOPES.map(sc => `
+            <span class="scope-step scope-step-${sc} ${cur===sc?'active':''}" onclick="setScope('${key}','${sc}')" title="${SCOPE_DESC[sc]}">
+              ${SCOPE_LABELS[sc]}
+            </span>
+          `).join('')}
+        </div>
+        <div class="scope-desc">${SCOPE_DESC[cur]}</div>
+      </div>
+    `;
+  }).join('');
+}
+function setScope(key, val) {
+  yiqScopes[key] = val;
+  renderScopeRows();
+  renderEntityRows();
+}
+
+// ── FIELD ROWS ──
+const FIELD_BADGES = { hidden:'badge-red', view:'badge-gray', edit:'badge-teal' };
+const FIELD_LABELS = { hidden:'Hidden', view:'View only', edit:'Editable' };
+function renderFieldRows() {
+  const wrap = document.getElementById('field-rows');
+  wrap.innerHTML = YIQ_ENTITIES.slice(0,4).map(e => `
+    <div class="card mb-16" style="margin-bottom:12px">
+      <div class="card-header">
+        <div class="card-title">${e.icon} ${e.name}</div>
+        <span class="text-muted">${e.fields.length} fields</span>
+      </div>
+      <div>
+        ${e.fields.map(f => {
+          const mode = fieldStates[e.name][f] || 'view';
+          return `
+            <div style="display:grid;grid-template-columns:1fr auto;align-items:center;padding:9px 20px;border-bottom:1px solid var(--border);font-size:13px">
+              <span style="color:var(--text2)">${f}</span>
+              <div style="display:flex;gap:4px">
+                ${FIELD_MODES.map(m => `
+                  <span class="badge ${mode===m?FIELD_BADGES[m]:'badge-gray'}" style="cursor:pointer;${mode!==m?'opacity:.5':''}" onclick="setFieldMode('${e.name}','${f.replace(/'/g,"\\'")}','${m}')">
+                    ${FIELD_LABELS[m]}
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+function setFieldMode(entity, field, mode) {
+  if (!fieldStates[entity]) fieldStates[entity] = {};
+  fieldStates[entity][field] = mode;
+  renderFieldRows();
+}
+
+// ── YIQ TABS ──
+function switchYiqTab(tab, btn) {
+  ['entities','scope','fields'].forEach(t => {
+    document.getElementById('yiq-tab-'+t).style.display = t===tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('.yiq-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── MODAL ──
+function openModal(id) {
+  populateInviteRoles();
+  document.getElementById('modal-'+id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById('modal-'+id).classList.remove('open');
+}
+function populateInviteRoles() {
+  const sel = document.getElementById('invite-role-select');
+  const bf = document.getElementById('invite-brand-field');
+  const p = PRODUCTS[currentProduct];
+  sel.innerHTML = p.roles.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+  bf.style.display = currentProduct==='yiq' ? 'block' : 'none';
+}
+
+// ── MISC ──
+function showSaved() {
+  const t = document.getElementById('saved-toast');
+  t.style.opacity = '1';
+  setTimeout(()=>{ t.style.opacity='0'; }, 2200);
+}
+
+// ── START ──
+init();
+showView('editor');
+</script>
+</body>
+</html>
