@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>YachtIQ — Manual Withdraw Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   YachtIQ DS tokens — copied verbatim from yachtiq-tokens.css
+   (Yacht IQ — DS, TnHJfnSe2lGDELIalQjpd3). Do not hand-edit:
+   change the Figma variable and rebuild the token file instead.
+   This system is LIGHT MODE ONLY — no dark-mode block is defined
+   on purpose (critical rule 1: dark tokens are for text/tooltips
+   only, never a page or section background).
+   ============================================================ */
+:root{
+  /* Primitives — palette definition only; never referenced directly below */
+  --color-white:#ffffff;
+  --color-black:#000000;
+  --color-bluegray-25:#f8f9fb;
+  --color-bluegray-50:#f1f5f9;
+  --color-bluegray-100:#e2ebf3;
+  --color-bluegray-200:#d3dce8;
+  --color-bluegray-300:#b5c3d4;
+  --color-bluegray-400:#9aa8bc;
+  --color-bluegray-500:#7b8ba3;
+  --color-bluegray-600:#64748b;
+  --color-bluegray-700:#475569;
+  --color-bluegray-800:#334155;
+  --color-bluegray-900:#1e293b;
+  --color-marine-blue-500:#2f92b6;
+  --color-marine-blue-600:#277996;
+  --color-bronze-100:#ece8e3;
+  --color-bronze-300:#c9bdaf;
+  --color-bronze-500:#9a856b;
+  --color-bronze-600:#88735e;
+  --color-bronze-700:#756051;
+  --color-orange-25:#fffaf5;
+  --color-orange-400:#f78e1e;
+  --color-orange-500:#f26d07;
+  --color-orange-600:#db4d00;
+  --color-orange-700:#ad4200;
+  --color-red-100:#feeced;
+  --color-red-500:#e8292f;
+  --color-red-600:#c71c22;
+  --color-red-700:#af1218;
+  --color-green-100:#e0f5ee;
+  --color-green-600:#28a97b;
+  --color-green-700:#1a8962;
+  --color-green-800:#18684c;
+  --color-purple-600:#7d3d8a;
+  --color-alpha-gray-50: rgba(30,41,59,0.5);
+  --color-alpha-gray-10: rgba(30,41,59,0.1);
+  --color-alpha-blue-12: rgba(39,121,150,0.12);
+  --color-alpha-bronze-90: rgba(117,96,81,0.9);
+  --color-alpha-bronze-12: rgba(117,96,81,0.12);
+  --color-alpha-bronze-5: rgba(117,96,81,0.06);
+  --color-alpha-green-15: rgba(50,195,143,0.13);
+  --color-alpha-orange-12: rgba(247,142,30,0.12);
+  --color-alpha-red-7: rgba(232,41,47,0.07);
+  --color-alpha-purple-9: rgba(125,61,138,0.09);
+
+  /* Semantic — build with these, never a primitive inside a component */
+  --color-text-default-primary: var(--color-bluegray-900);
+  --color-text-default-secondary: var(--color-bluegray-800);
+  --color-text-default-tertiary: var(--color-bluegray-700);
+  --color-text-default-quaternary: var(--color-bluegray-600);
+  --color-text-default-placeholder: var(--color-bluegray-500);
+  --color-text-default-inverse: var(--color-white);
+  --color-text-primary-default: var(--color-bronze-700);
+  --color-text-success-default: var(--color-green-700);
+  --color-text-warning-default: var(--color-orange-600);
+  --color-text-error-default: var(--color-red-600);
+  --color-text-info-default: var(--color-marine-blue-600);
+  --color-text-ready-default: var(--color-purple-600);
+
+  --color-icon-default-primary: var(--color-bluegray-900);
+  --color-icon-default-secondary: var(--color-bluegray-800);
+  --color-icon-default-tertiary: var(--color-bluegray-700);
+  --color-icon-default-quaternary: var(--color-bluegray-600);
+  --color-icon-default-actions: var(--color-bluegray-400);
+  --color-icon-default-inverse: var(--color-white);
+  --color-icon-primary-default: var(--color-bronze-700);
+  --color-icon-warning-default: var(--color-orange-600);
+  --color-icon-error-default: var(--color-red-600);
+  --color-icon-success-default: var(--color-green-700);
+
+  --color-surface-default-base: var(--color-bluegray-50);
+  --color-surface-default-default: var(--color-white);
+  --color-surface-default-hover: var(--color-bluegray-25);
+  --color-surface-default-inverse: var(--color-bluegray-900);
+  --color-surface-default-overlay: var(--color-alpha-gray-50);
+  --color-surface-primary-default: var(--color-bronze-700);
+  --color-surface-primary-hover: var(--color-bronze-600);
+  --color-surface-primary-subtle: var(--color-alpha-bronze-5);
+  --color-surface-primary-subtle-hover: var(--color-alpha-bronze-12);
+  --color-surface-warning-subtle: var(--color-alpha-orange-12);
+  --color-surface-warning-strong: var(--color-orange-700);
+  --color-surface-success-subtle: var(--color-alpha-green-15);
+  --color-surface-success-strong: var(--color-green-800);
+  --color-surface-error-strong: var(--color-red-700);
+  --color-surface-error-subtle: var(--color-alpha-red-7);
+  --color-surface-info-subtle: var(--color-alpha-blue-12);
+  --color-surface-neutral-subtle: var(--color-alpha-gray-10);
+  --color-surface-ready-subtle: var(--color-alpha-purple-9);
+
+  --color-border-default-primary: var(--color-bluegray-100);
+  --color-border-default-secondary: var(--color-bluegray-200);
+  --color-border-default-tertiary: var(--color-bluegray-300);
+  --color-border-primary-default: var(--color-bronze-700);
+  --color-border-primary-subtle: var(--color-alpha-bronze-12);
+  --color-border-warning-default: var(--color-orange-600);
+  --color-border-warning-subtle: var(--color-alpha-orange-12);
+  --color-border-error-default: var(--color-red-600);
+  --color-border-error-subtle: var(--color-red-100);
+  --color-border-focus-ring: var(--color-bronze-700);
+
+  /* Spacing — multiples of 8 are layout; 2/4/6/12/20/28... are component internals only */
+  --spacing-2:2px; --spacing-4:4px; --spacing-6:6px; --spacing-8:8px; --spacing-12:12px;
+  --spacing-16:16px; --spacing-20:20px; --spacing-24:24px; --spacing-28:28px; --spacing-32:32px;
+  --spacing-40:40px; --spacing-48:48px;
+
+  --radius-none:0px; --radius-xs:2px; --radius-sm:4px; --radius-md:8px; --radius-lg:12px; --radius-xl:16px; --radius-round:9999px;
+
+  --font-family-sans:'DM Sans', -apple-system, 'Segoe UI', sans-serif;
+
+  --font-size-10:10px; --font-size-12:12px; --font-size-14:14px; --font-size-16:16px;
+  --font-size-20:20px; --font-size-24:24px; --font-size-28:28px; --font-size-32:32px; --font-size-36:36px;
+  --line-height-14:14px; --line-height-16:16px; --line-height-20:20px; --line-height-24:24px;
+  --line-height-28:28px; --line-height-32:32px; --line-height-36:36px; --line-height-40:40px;
+
+  --layout-sidebar-expanded:216px;
+  --layout-sidebar-rail:92px;
+  --layout-topbar-height:76px;
+  --layout-content-max:1152px;
+  --layout-content-padding:32px;
+  --layout-content-padding-tablet:24px;
+  --layout-content-padding-mobile:16px;
+  --layout-control-sm:32px;
+  --layout-control-md:40px;
+  --layout-control-lg:56px;
+  --layout-table-header:40px;
+  --layout-table-row:64px;
+  --layout-icon-sm:16px;
+  --layout-icon-md:20px;
+  --layout-icon-lg:24px;
+  --layout-touch-target:48px;
+  --layout-breakpoint-sm:640px;
+  --layout-breakpoint-md:1024px;
+  --layout-breakpoint-lg:1440px;
+
+  --border-width-thin:1px;
+  --border-width-thick:2px;
+  --focus-ring-width:2px;
+  --focus-ring-offset:2px;
+
+  --shadow-sm: 0px 1px 3px rgba(30,41,59,0.08), 0px 1px 2px rgba(30,41,59,0.06);
+  --shadow-md: 0px 4px 6px -1px rgba(30,41,59,0.08), 0px 2px 4px -1px rgba(30,41,59,0.04);
+  --shadow-lg: 0px 10px 15px -3px rgba(30,41,59,0.1), 0px 4px 6px -2px rgba(30,41,59,0.05);
+  --shadow-sidebar: 4px 0px 4px -2px rgba(30,41,59,0.08);
+
+  /* Single source of truth for menu width — critical rule 2 */
+  --menu-width: var(--layout-sidebar-expanded);
+}
+
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; background:var(--color-surface-default-base); font-family:var(--font-family-sans); color:var(--color-text-default-primary); }
+a{ color:inherit; }
+button{ font-family:inherit; }
+
+/* Type utility classes — one per Figma text style actually used here */
+.overline-sm{ font-family:var(--font-family-sans); font-size:var(--font-size-12); line-height:var(--line-height-20); font-weight:600; text-transform:uppercase; letter-spacing:0.04em; }
+.heading-sm{ font-family:var(--font-family-sans); font-size:var(--font-size-24); line-height:var(--line-height-28); font-weight:600; }
+.heading-2xs{ font-family:var(--font-family-sans); font-size:var(--font-size-16); line-height:var(--line-height-24); font-weight:600; }
+.heading-lg{ font-family:var(--font-family-sans); font-size:var(--font-size-32); line-height:var(--line-height-36); font-weight:600; }
+.text-md-regular{ font-family:var(--font-family-sans); font-size:var(--font-size-16); line-height:var(--line-height-24); font-weight:400; }
+.text-md-semibold{ font-family:var(--font-family-sans); font-size:var(--font-size-16); line-height:var(--line-height-24); font-weight:600; }
+.text-sm-regular{ font-family:var(--font-family-sans); font-size:var(--font-size-14); line-height:var(--line-height-20); font-weight:400; }
+.text-sm-medium{ font-family:var(--font-family-sans); font-size:var(--font-size-14); line-height:var(--line-height-20); font-weight:500; }
+.text-sm-semibold{ font-family:var(--font-family-sans); font-size:var(--font-size-14); line-height:var(--line-height-20); font-weight:600; }
+.text-xs-medium{ font-family:var(--font-family-sans); font-size:var(--font-size-12); line-height:var(--line-height-16); font-weight:500; }
+.text-xs-semibold{ font-family:var(--font-family-sans); font-size:var(--font-size-12); line-height:var(--line-height-16); font-weight:600; }
+.text-2xs-regular{ font-family:var(--font-family-sans); font-size:var(--font-size-10); line-height:var(--line-height-14); font-weight:400; }
+
+:focus-visible{
+  outline: var(--focus-ring-width) solid var(--color-border-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+/* Tab has no Focus state in Figma — the ring applies anyway (critical rule 10) */
+
+/* Reset for div/button-based interactive controls that borrow app chrome styling */
+.reset-btn{ appearance:none; border:none; background:none; text-align:left; padding:0; margin:0; cursor:pointer; color:inherit; }
+
+svg.icon{ display:block; flex-shrink:0; }
+.icon-16{ width:var(--layout-icon-sm); height:var(--layout-icon-sm); }
+.icon-20{ width:var(--layout-icon-md); height:var(--layout-icon-md); }
+.icon-24{ width:var(--layout-icon-lg); height:var(--layout-icon-lg); }
+
+/* ============================================================
+   Shell — Menu + Top bar
+   ============================================================ */
+.app-shell{ display:flex; min-height:100vh; }
+
+.menu{
+  width: var(--menu-width);
+  flex-shrink:0;
+  background:var(--color-surface-default-default);
+  border-right: var(--border-width-thin) solid var(--color-border-default-primary);
+  display:flex;
+  flex-direction:column;
+  transition: width .18s ease;
+  overflow:hidden;
+}
+.menu-logo-row{
+  height: var(--layout-topbar-height);
+  padding: var(--spacing-32) var(--spacing-16);
+  border-bottom: var(--border-width-thin) solid var(--color-border-default-primary);
+  display:flex; align-items:center; gap:var(--spacing-6); flex-shrink:0;
+  white-space:nowrap;
+}
+.menu-logo-row .yacht{ font-weight:600; color:var(--color-text-default-primary); font-size:var(--font-size-16); }
+.menu-logo-row .sep{ color:var(--color-border-default-primary); }
+.menu-logo-row .iq{ font-weight:300; color:var(--color-text-primary-default); font-size:var(--font-size-16); }
+.menu.collapsed .menu-logo-row{ justify-content:center; padding: var(--spacing-32) 0; }
+.menu.collapsed .menu-logo-row .yacht, .menu.collapsed .menu-logo-row .sep{ display:none; }
+
+.menu-nav{ padding: var(--spacing-20) var(--spacing-16); display:flex; flex-direction:column; gap:var(--spacing-4); flex:1; overflow-y:auto; list-style:none; margin:0; }
+.nav-item{
+  width:100%; min-height:40px; padding:8px 12px; border-radius:var(--radius-md);
+  display:flex; align-items:center; gap:12px;
+  color:var(--color-text-default-secondary);
+}
+.nav-item .ic{ color:var(--color-icon-default-tertiary); }
+.nav-item .lbl{ font-size:var(--font-size-16); line-height:var(--line-height-24); font-weight:400; }
+.nav-item:hover{ background:var(--color-surface-default-hover); }
+.nav-item.active{
+  background: var(--color-surface-primary-subtle);
+  border: var(--border-width-thin) solid var(--color-border-primary-subtle);
+  color: var(--color-text-primary-default);
+}
+.nav-item.active .lbl{ font-weight:500; color:var(--color-text-primary-default); }
+.nav-item.active .ic{ color:var(--color-icon-primary-default); }
+.menu.collapsed .nav-item{ justify-content:center; }
+.menu.collapsed .nav-item .lbl{ display:none; }
+
+.menu-bottom{ padding: var(--spacing-16); display:flex; justify-content:flex-end; flex-shrink:0; }
+.menu.collapsed .menu-bottom{ justify-content:center; }
+.icon-btn-40{
+  width:40px; height:40px; border-radius:var(--radius-md); border:none; background:transparent;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--color-icon-default-tertiary);
+}
+.icon-btn-40:hover{ background:var(--color-surface-default-hover); }
+
+.main-col{ flex:1; display:flex; flex-direction:column; min-width:0; }
+
+.topbar{
+  height: var(--layout-topbar-height); flex-shrink:0;
+  background:var(--color-surface-default-default);
+  border-bottom: var(--border-width-thin) solid var(--color-border-default-primary);
+  display:flex; align-items:center; justify-content:space-between; padding:0 var(--spacing-24);
+}
+.topbar-search{ display:flex; align-items:center; gap:var(--spacing-8); max-width:578px; flex:1; }
+.search-field{
+  height:40px; flex:1; border-radius:var(--radius-md); border:var(--border-width-thin) solid var(--color-border-default-primary);
+  background:var(--color-surface-default-default);
+  display:flex; align-items:center; gap:var(--spacing-8); padding:0 var(--spacing-12);
+}
+.search-field:focus-within{ outline: var(--focus-ring-width) solid var(--color-border-focus-ring); outline-offset: var(--focus-ring-offset); }
+.search-field .ic{ color:var(--color-icon-default-quaternary); }
+.search-field input{
+  border:none; outline:none; flex:1; background:transparent; font-family:var(--font-family-sans);
+  font-size:var(--font-size-14); color:var(--color-text-default-primary);
+}
+.search-field input::placeholder{ color:var(--color-text-default-placeholder); }
+.filter-btn{ width:40px; height:40px; border-radius:var(--radius-md); border:var(--border-width-thin) solid var(--color-border-default-primary); background:var(--color-surface-default-default); display:flex; align-items:center; justify-content:center; color:var(--color-icon-default-tertiary); cursor:pointer; flex-shrink:0; }
+.filter-btn:hover{ background:var(--color-surface-default-hover); }
+.user-menu{ height:32px; padding:0 8px; display:flex; align-items:center; gap:8px; cursor:pointer; border-radius:var(--radius-sm); background:transparent; border:none; }
+.user-menu:hover{ background:var(--color-surface-default-hover); }
+.user-menu .name{ font-size:var(--font-size-14); line-height:var(--line-height-20); color:var(--color-text-default-primary); }
+.user-menu .ic{ color:var(--color-icon-default-actions); }
+.avatar-circle{ width:24px; height:24px; border-radius:var(--radius-round); background:var(--color-surface-primary-subtle); color:var(--color-text-primary-default); display:flex; align-items:center; justify-content:center; font-size:var(--font-size-12); font-weight:600; flex-shrink:0; }
+
+.content{ flex:1; padding: var(--layout-content-padding); max-width:var(--layout-content-max); width:100%; margin:0 auto; padding-bottom:calc(var(--layout-content-padding) + 64px); }
+
+/* ============================================================
+   Prototype-only harness (role/mode switcher) — clearly separated
+   ============================================================ */
+.harness{
+  background: var(--color-surface-default-default);
+  border-bottom: var(--border-width-thin) solid var(--color-border-default-primary);
+  padding: var(--spacing-12) var(--spacing-24);
+  display:flex; align-items:center; gap:var(--spacing-24); flex-wrap:wrap;
+}
+.harness-group{ display:flex; align-items:center; gap:var(--spacing-8); }
+.harness-label{ font-size:var(--font-size-12); font-weight:600; color:var(--color-text-default-quaternary); text-transform:uppercase; letter-spacing:.04em; }
+.seg{ display:flex; background:var(--color-surface-default-base); border-radius:var(--radius-md); padding:2px; gap:2px; }
+.seg button{
+  border:none; background:transparent; padding:6px 14px; border-radius:var(--radius-sm); cursor:pointer;
+  font-size:var(--font-size-14); line-height:var(--line-height-20); font-weight:500; color:var(--color-text-default-tertiary);
+}
+.seg button.on{ background:var(--color-surface-default-default); color:var(--color-text-primary-default); box-shadow:var(--shadow-sm); }
+.harness-select{
+  height:36px; border-radius:var(--radius-sm); border:var(--border-width-thin) solid var(--color-border-default-primary);
+  background:var(--color-surface-default-default); padding:0 10px; font-size:var(--font-size-12); color:var(--color-text-default-primary);
+  font-family:var(--font-family-sans); cursor:pointer; min-width:340px;
+}
+.scenario-note{
+  margin-top:16px; padding:12px 16px; border-radius:var(--radius-md); background:var(--color-surface-default-hover);
+  border:var(--border-width-thin) solid var(--color-border-default-secondary); font-size:var(--font-size-12); color:var(--color-text-default-tertiary);
+  display:flex; gap:8px; align-items:flex-start;
+}
+
+/* ============================================================
+   Page: Yacht detail — Charter tab / Charter History subtab
+   ============================================================ */
+.page-header{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom: var(--spacing-24); flex-wrap:wrap; gap:12px; }
+.page-header h1{ margin:0; }
+.yacht-title{ color:var(--color-text-primary-default); }
+
+/* Tabs / Tab component — critical rule 4. Both tab levels reuse this exact
+   spec; a hand-built second row is not permitted. */
+.tabs-row{ background:var(--color-surface-default-default); border-bottom: var(--border-width-thin) solid var(--color-border-default-primary); display:flex; margin-bottom: var(--spacing-24); overflow-x:auto; }
+.tab{ padding:16px 12px; cursor:pointer; border-bottom:var(--border-width-thick) solid transparent; white-space:nowrap; }
+.tab .lbl{ font-size:var(--font-size-16); line-height:var(--line-height-24); }
+.tab[aria-selected="false"] .lbl{ font-weight:400; color:var(--color-text-default-quaternary); }
+.tab[aria-selected="true"]{ border-bottom-color: var(--color-border-primary-default); }
+.tab[aria-selected="true"] .lbl{ font-weight:600; color:var(--color-text-default-secondary); }
+
+.section-card{
+  background:var(--color-surface-default-default);
+  border:var(--border-width-thin) solid var(--color-border-default-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-24);
+  margin-bottom: var(--spacing-24);
+}
+.section-title{ margin:0 0 4px 0; }
+.section-sub{ margin:0 0 20px 0; color:var(--color-text-default-quaternary); font-size:var(--font-size-14); }
+
+.field-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: var(--spacing-24) var(--spacing-32); }
+.field{ display:flex; flex-direction:column; gap:var(--spacing-6); }
+.field-label{ display:flex; align-items:center; gap:8px; color:var(--color-text-default-quaternary); }
+.field-value{ font-size:var(--font-size-16); line-height:var(--line-height-24); color:var(--color-text-default-primary); }
+.field-value.muted{ color:var(--color-text-default-quaternary); }
+.field-code{ display:block; margin-top:2px; color:var(--color-text-default-quaternary); }
+
+/* Charter listings table */
+.listings-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; gap:12px; flex-wrap:wrap; }
+.btn{
+  height:40px; padding:0 16px; border-radius:var(--radius-md); border:none; cursor:pointer;
+  display:inline-flex; align-items:center; gap:8px; font-size:var(--font-size-14); line-height:var(--line-height-20); font-weight:600;
+  white-space:nowrap;
+}
+.btn-solid{ background:var(--color-surface-primary-default); color:var(--color-text-default-inverse); }
+.btn-solid:hover{ background:var(--color-surface-primary-hover); }
+.btn-outline{ background:var(--color-surface-default-default); color:var(--color-text-default-secondary); border:var(--border-width-thin) solid var(--color-border-default-primary); }
+.btn-outline:hover{ background:var(--color-surface-default-hover); }
+.btn-outline-primary{ background:var(--color-surface-default-default); color:var(--color-text-primary-default); border:var(--border-width-thin) solid var(--color-border-primary-default); }
+.btn-outline-primary:hover{ background:var(--color-surface-primary-subtle); }
+.btn-destructive-outline{ background:var(--color-surface-default-default); color:var(--color-text-error-default); border:var(--border-width-thin) solid var(--color-border-error-default); }
+.btn-destructive-outline:hover{ background:var(--color-surface-error-subtle); }
+.btn-destructive{ background:var(--color-surface-error-strong); color:var(--color-text-default-inverse); }
+.btn-destructive:hover{ background:var(--color-surface-error-default, var(--color-red-600)); }
+.btn[disabled]{ opacity:.5; cursor:not-allowed; }
+
+.table-wrap{ overflow-x:auto; border:var(--border-width-thin) solid var(--color-border-default-primary); border-radius:var(--radius-lg); }
+table{ width:100%; border-collapse:collapse; min-width:900px; }
+thead th{
+  height: var(--layout-table-header); background:var(--color-surface-default-default);
+  border-bottom: var(--border-width-thin) solid var(--color-border-default-primary);
+  text-align:left; padding:0 16px; font-size:var(--font-size-12); font-weight:500; color:var(--color-text-default-tertiary);
+  white-space:nowrap;
+}
+thead th.right{ text-align:right; }
+tbody tr{ height: var(--layout-table-row); background:var(--color-surface-default-default); }
+tbody tr:not(:last-child) td{ border-bottom: var(--border-width-thin) solid var(--color-border-default-secondary); }
+tbody td{ padding:0 16px; font-size:var(--font-size-14); color:var(--color-text-default-primary); vertical-align:middle; }
+tbody td.strong{ font-weight:500; }
+tbody td .sub{ display:block; font-size:var(--font-size-12); color:var(--color-text-default-quaternary); }
+tbody td.actions{ text-align:right; }
+
+.future-badge{ font-size:var(--font-size-10); line-height:var(--line-height-14); font-weight:600; color:var(--color-text-default-quaternary); background:var(--color-surface-neutral-subtle); padding:2px 6px; border-radius:var(--radius-sm); margin-left:8px; }
+
+.row-menu-btn{ width:32px; height:32px; border-radius:var(--radius-sm); border:none; background:transparent; color:var(--color-icon-default-tertiary); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
+.row-menu-btn:hover{ background:var(--color-surface-default-hover); }
+
+/* Modal */
+.modal-overlay{
+  position:fixed; inset:0; background:var(--color-surface-default-overlay); z-index:100;
+  display:none; align-items:center; justify-content:center; padding:24px;
+}
+.modal-overlay.open{ display:flex; }
+.modal{
+  position:relative; background:var(--color-surface-default-default); border-radius:var(--radius-lg); box-shadow:var(--shadow-lg);
+  max-width:480px; width:100%; padding: var(--spacing-24);
+}
+.modal-close{ position:absolute; top:16px; right:16px; width:32px; height:32px; border-radius:var(--radius-sm); border:none; background:transparent; color:var(--color-icon-default-tertiary); cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.modal-close:hover{ background:var(--color-surface-default-hover); }
+.modal-icon-wrap{
+  width:48px; height:48px; border-radius:var(--radius-round); display:flex; align-items:center; justify-content:center;
+  margin-bottom:16px;
+}
+.modal-icon-wrap.warning{ background:var(--color-surface-warning-subtle); color:var(--color-icon-warning-default); }
+.modal h2{ margin:0 0 8px 0; }
+.modal p{ margin:0 0 20px 0; color:var(--color-text-default-tertiary); font-size:var(--font-size-14); line-height:var(--line-height-20); }
+.modal-actions{ display:flex; justify-content:flex-end; gap:12px; flex-wrap:wrap; }
+
+.callout-note{
+  margin-top:24px; padding:16px; border-radius:var(--radius-md); background:var(--color-surface-primary-subtle);
+  border:var(--border-width-thin) solid var(--color-border-primary-subtle);
+  font-size:var(--font-size-12); color:var(--color-text-default-tertiary); line-height:var(--line-height-20);
+}
+.callout-note strong{ color:var(--color-text-default-secondary); }
+
+.toast{
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); opacity:0;
+  background:var(--color-surface-default-inverse); color:var(--color-text-default-inverse); padding:12px 20px; border-radius:var(--radius-md);
+  font-size:var(--font-size-14); box-shadow:var(--shadow-lg); z-index:200; display:flex; align-items:center; gap:10px;
+  transition: opacity .2s ease, transform .2s ease; pointer-events:none; max-width:calc(100vw - 48px);
+}
+.toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+.toast .ic{ color:var(--color-icon-default-inverse); }
+
+/* Mobile bottom tab bar — replaces the left menu below 640px (critical rule 2) */
+.bottom-tabbar{
+  position:fixed; left:0; right:0; bottom:0; z-index:60;
+  background:var(--color-surface-default-default);
+  border-top: var(--border-width-thin) solid var(--color-border-default-primary);
+  display:none;
+  justify-content:space-around;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.bottom-tab{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  padding:8px 4px; min-height:var(--layout-touch-target); background:none; border:none; cursor:pointer;
+  color:var(--color-text-default-quaternary);
+}
+.bottom-tab .ic{ color:var(--color-icon-default-tertiary); }
+.bottom-tab.active{ color:var(--color-text-primary-default); }
+.bottom-tab.active .ic{ color:var(--color-icon-primary-default); }
+.bottom-tab .lbl{ font-size:var(--font-size-12); line-height:var(--line-height-16); font-weight:600; }
+
+@media (max-width:1024px){
+  .content{ padding-left:var(--layout-content-padding-tablet); padding-right:var(--layout-content-padding-tablet); }
+}
+@media (max-width:640px){
+  .menu{ display:none; }
+  .bottom-tabbar{ display:flex; }
+  .content{ padding: var(--layout-content-padding-mobile); padding-bottom:calc(var(--layout-content-padding-mobile) + 72px); }
+  .topbar{ padding:0 16px; }
+  .topbar-search .search-field span.search-placeholder-text{ display:none; }
+  .user-menu .name{ display:none; }
+  .modal-overlay{ padding:0; }
+  .modal{ max-width:none; width:100%; height:100%; border-radius:0; display:flex; flex-direction:column; justify-content:center; }
+}
+</style>
+</head>
+<body>
+
+<div class="harness">
+  <div class="harness-group">
+    <span class="harness-label">Simulate charter state</span>
+    <select id="scenarioSelect" class="harness-select" onchange="setScenario(this.value)">
+      <option value="active">1 · Current season active</option>
+      <option value="futureBooked">2 · No current season, future season on file</option>
+      <option value="buffer">3 · No current/future season, within 6-mo buffer</option>
+      <option value="bufferExpired">4 · Buffer expired, still no season</option>
+      <option value="withdrawn">5 · Explicitly withdrawn</option>
+    </select>
+  </div>
+  <div class="harness-group">
+    <span class="harness-label">Management company</span>
+    <select id="companySelect" class="harness-select" style="min-width:220px;" onchange="setCompany(this.value)">
+      <option value="bradford">Bradford Marine</option>
+      <option value="fraser">Fraser Yachts</option>
+      <option value="nj">Northrop &amp; Johnson</option>
+      <option value="none">No management company</option>
+    </select>
+  </div>
+  <div class="harness-group">
+    <span class="harness-label">Menu</span>
+    <div class="seg">
+      <button id="menuExp" class="on" onclick="setMenu(false, true)">Expanded</button>
+      <button id="menuCol" onclick="setMenu(true, true)">Collapsed</button>
+    </div>
+  </div>
+  <div style="margin-left:auto; font-size:12px; color:var(--color-text-default-quaternary);">Prototype only — not part of the shipped UI · logic per YIQ-3084</div>
+</div>
+
+<div class="app-shell">
+
+  <!-- LEFT MENU — Menu/Expanded + Menu/Collapsed, one shell driven by --menu-width -->
+  <nav class="menu" id="menu" aria-label="Primary">
+    <div class="menu-logo-row">
+      <span class="yacht">YACHT</span><span class="sep">|</span><span class="iq">IQ</span>
+    </div>
+    <ul class="menu-nav">
+      <li><button class="nav-item reset-btn" type="button"><span class="ic icon-20">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/><path d="M10 19v-5h4v5"/></svg>
+      </span><span class="lbl">Dashboard</span></button></li>
+      <li><button class="nav-item reset-btn active" type="button" aria-current="page"><span class="ic icon-20">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15h16l-2 4H6z"/><path d="M12 4v9"/><path d="M7 9l5-5 5 5"/></svg>
+      </span><span class="lbl">All Yachts</span></button></li>
+      <li><button class="nav-item reset-btn" type="button"><span class="ic icon-20">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>
+      </span><span class="lbl">Yachts Show</span></button></li>
+      <li><button class="nav-item reset-btn" type="button"><span class="ic icon-20">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="1" fill="currentColor" stroke="none"/><line x1="9" y1="6" x2="20" y2="6"/><circle cx="5" cy="12" r="1" fill="currentColor" stroke="none"/><line x1="9" y1="12" x2="20" y2="12"/><circle cx="5" cy="18" r="1" fill="currentColor" stroke="none"/><line x1="9" y1="18" x2="20" y2="18"/></svg>
+      </span><span class="lbl">Lists &amp; Shows</span></button></li>
+      <li><button class="nav-item reset-btn" type="button"><span class="ic icon-20">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
+      </span><span class="lbl">Yachts Updates</span></button></li>
+      <li><button class="nav-item reset-btn" type="button"><span class="ic icon-20">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 14.6 9l6.2.6-4.6 4.2 1.3 6.1L12 16.9 6.5 19.9l1.3-6.1-4.6-4.2 6.2-.6z"/></svg>
+      </span><span class="lbl">Yacht Matches</span></button></li>
+      <li><button class="nav-item reset-btn" type="button"><span class="ic icon-20">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg>
+      </span><span class="lbl">Market Intelligence</span></button></li>
+      <li><button class="nav-item reset-btn" type="button"><span class="ic icon-20">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><line x1="12" y1="7" x2="12" y2="21"/><path d="M5 14a7 7 0 0 0 14 0"/></svg>
+      </span><span class="lbl">Shipyards</span></button></li>
+      <li><button class="nav-item reset-btn" type="button"><span class="ic icon-20">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+      </span><span class="lbl">Emails</span></button></li>
+      <li><button class="nav-item reset-btn" type="button"><span class="ic icon-20">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M15.2 20c.3-2.2 1.9-4 3.8-4"/></svg>
+      </span><span class="lbl">Centrals &amp; Deals</span></button></li>
+      <li><button class="nav-item reset-btn" type="button"><span class="ic icon-20">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>
+      </span><span class="lbl">Publishing Hub</span></button></li>
+    </ul>
+    <div class="menu-bottom">
+      <button class="icon-btn-40" id="collapseBtn" onclick="toggleMenu()" aria-label="Collapse menu">
+        <svg class="icon icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <div class="main-col">
+    <!-- TOP BAR — Top Bar/Desktop, navigation always lives in the left menu -->
+    <div class="topbar">
+      <div class="topbar-search">
+        <div class="search-field">
+          <span class="ic icon-20"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+          <input type="search" aria-label="Search yachts" placeholder="Search by yacht name" />
+        </div>
+        <button class="filter-btn" aria-label="Filters">
+          <svg class="icon icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="1.6" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="1.6" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="1.6" fill="currentColor" stroke="none"/></svg>
+        </button>
+      </div>
+      <button class="user-menu reset-btn" type="button" aria-label="Account menu for Olivia Reyes">
+        <span class="avatar-circle">OR</span>
+        <span class="name">Olivia Reyes</span>
+        <span class="ic icon-16"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </button>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <div class="page-header">
+        <div>
+          <h1 class="heading-lg yacht-title">M (1111)</h1>
+        </div>
+      </div>
+
+      <div class="tabs-row" role="tablist" aria-label="Yacht record sections" id="tabsLevel1">
+        <button class="tab reset-btn" role="tab" aria-selected="false" type="button"><span class="lbl">Sales</span></button>
+        <button class="tab reset-btn" role="tab" aria-selected="true" type="button"><span class="lbl">Charter</span></button>
+      </div>
+
+      <div class="tabs-row" role="tablist" aria-label="Charter detail sections" id="tabsLevel2">
+        <button class="tab reset-btn" role="tab" aria-selected="false" type="button"><span class="lbl">Overview</span></button>
+        <button class="tab reset-btn" role="tab" aria-selected="false" type="button"><span class="lbl">Dimensions</span></button>
+        <button class="tab reset-btn" role="tab" aria-selected="false" type="button"><span class="lbl">Mechanical</span></button>
+        <button class="tab reset-btn" role="tab" aria-selected="false" type="button"><span class="lbl">Equipment</span></button>
+        <button class="tab reset-btn" role="tab" aria-selected="false" type="button"><span class="lbl">Location</span></button>
+        <button class="tab reset-btn" role="tab" aria-selected="true" type="button"><span class="lbl">Charter History</span></button>
+        <button class="tab reset-btn" role="tab" aria-selected="false" type="button"><span class="lbl">Marketing</span></button>
+        <button class="tab reset-btn" role="tab" aria-selected="false" type="button"><span class="lbl">Special Offers</span></button>
+        <button class="tab reset-btn" role="tab" aria-selected="false" type="button"><span class="lbl">Notes</span></button>
+        <button class="tab reset-btn" role="tab" aria-selected="false" type="button"><span class="lbl">Admin</span></button>
+      </div>
+
+      <!-- ================= Charter Overview: Market Status + Listing Status + their dependent fields, fully computed ================= -->
+      <div id="panelA">
+        <div class="section-card">
+          <h2 class="heading-2xs section-title">Charter Overview</h2>
+          <p class="section-sub">Market Status, Listing Status, Season, Rates, Manager and Mgmt Company are all computed from Charter Listings — none of these seven fields are directly editable.</p>
+          <div class="field-grid">
+            <div class="field">
+              <span class="field-label overline-sm">Market Status</span>
+              <span class="field-value" id="f-status">Officially for Charter</span>
+            </div>
+            <div class="field">
+              <span class="field-label overline-sm">Listing Status</span>
+              <span class="field-value" id="f-listing">Central / 3rd-Party Brokers</span>
+              <span class="field-code text-2xs-regular" id="f-listing-code">CENTRAL_3RD_BROKERS</span>
+            </div>
+            <div class="field">
+              <span class="field-label overline-sm">Season</span>
+              <span class="field-value" id="f-season">Summer 2026</span>
+            </div>
+            <div class="field">
+              <span class="field-label overline-sm">High Rate</span>
+              <span class="field-value" id="f-highrate">$185,000 /wk</span>
+            </div>
+            <div class="field">
+              <span class="field-label overline-sm">Low Rate</span>
+              <span class="field-value" id="f-lowrate">$165,000 /wk</span>
+            </div>
+            <div class="field">
+              <span class="field-label overline-sm">Charter Manager</span>
+              <span class="field-value" id="f-manager">Andrea Spires</span>
+            </div>
+            <div class="field">
+              <span class="field-label overline-sm">Charter Mgmt</span>
+              <span class="field-value" id="f-mgmt">Bradford Marine</span>
+            </div>
+          </div>
+          <div class="scenario-note" id="scenarioNote">
+            <span>A season is active today, so Market Status reads straight from it.</span>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="listings-head">
+            <div>
+              <h2 class="heading-2xs section-title">Charter Listings</h2>
+              <p class="section-sub" style="margin-bottom:0;">4 seasons on record — 2 upcoming</p>
+            </div>
+            <div style="display:flex; gap:12px;">
+              <button class="btn btn-outline-primary" id="withdrawTrigger" type="button" onclick="openWithdrawModal()">
+                <svg class="icon icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+                Withdraw From Charter
+              </button>
+              <button class="btn btn-solid" type="button">
+                <svg class="icon icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add
+              </button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Start Date</th>
+                  <th>Active Season</th>
+                  <th>Manager</th>
+                  <th class="right">High Rate</th>
+                  <th class="right">Low Rate</th>
+                  <th>Region(s)</th>
+                  <th>Note</th>
+                  <th>Last Edited By</th>
+                  <th><span style="position:absolute; width:1px; height:1px; overflow:hidden;">Row actions</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="future">
+                  <td class="strong">05/01/2027 <span class="future-badge">Upcoming</span></td>
+                  <td>Summer 2027</td>
+                  <td>Andrea Spires<span class="sub">Bradford Marine</span></td>
+                  <td class="right">$67</td>
+                  <td class="right">$45</td>
+                  <td>Central/South America, All …</td>
+                  <td>—</td>
+                  <td>olivia@boatyard.com</td>
+                  <td class="actions"><button class="row-menu-btn" type="button" aria-label="Row actions">
+                    <svg class="icon icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="5" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.6" fill="currentColor" stroke="none"/></svg>
+                  </button></td>
+                </tr>
+                <tr class="future">
+                  <td class="strong">05/01/2026 <span class="future-badge">Upcoming</span></td>
+                  <td>Summer 2026</td>
+                  <td>Arie Van Vugt<span class="sub">Hallmark Yacht &amp; Ship</span></td>
+                  <td class="right">$33</td>
+                  <td class="right">$32</td>
+                  <td>Mediterranean &amp; Adriatic, A…</td>
+                  <td>—</td>
+                  <td>olivia@boatyard.com</td>
+                  <td class="actions"><button class="row-menu-btn" type="button" aria-label="Row actions">
+                    <svg class="icon icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="5" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.6" fill="currentColor" stroke="none"/></svg>
+                  </button></td>
+                </tr>
+                <tr>
+                  <td class="strong">05/01/2025</td>
+                  <td>Summer 2025</td>
+                  <td>Andrea Spires<span class="sub">Bradford Marine</span></td>
+                  <td class="right">$56</td>
+                  <td class="right">$34</td>
+                  <td>North America, Canada; No…</td>
+                  <td>—</td>
+                  <td>olivia@boatyard.com</td>
+                  <td class="actions"><button class="row-menu-btn" type="button" aria-label="Row actions">
+                    <svg class="icon icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="5" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.6" fill="currentColor" stroke="none"/></svg>
+                  </button></td>
+                </tr>
+                <tr>
+                  <td class="strong">05/01/2002</td>
+                  <td>Summer 2002</td>
+                  <td>Aleksandra Antonova<span class="sub">Royal Yacht Brokers</span></td>
+                  <td class="right">$344,556</td>
+                  <td class="right">$233,445</td>
+                  <td>Mediterranean &amp; Adriatic, C…</td>
+                  <td>—</td>
+                  <td>olivia@boatyard.com</td>
+                  <td class="actions"><button class="row-menu-btn" type="button" aria-label="Row actions">
+                    <svg class="icon icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="5" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.6" fill="currentColor" stroke="none"/></svg>
+                  </button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout-note">
+            <strong>Note:</strong> withdrawing sets Market Status straight to <em>Not for Charter</em> — there is no separate "Withdrawn" value on this field (confirmed in the Spike Result, decision table row 5). What persists internally is a withdrawn marker the derivation checks first, so the buffer never re-applies to this yacht even if a future season gets added later — unless that's meant to auto-clear it, which is still open (Spike Result, decision #3).
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE BOTTOM TAB BAR — replaces the left menu below 640px -->
+<nav class="bottom-tabbar" aria-label="Primary" id="bottomTabbar">
+  <button class="bottom-tab reset-btn" type="button">
+    <span class="ic icon-24"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/><path d="M10 19v-5h4v5"/></svg></span>
+    <span class="lbl">Dashboard</span>
+  </button>
+  <button class="bottom-tab reset-btn active" type="button" aria-current="page">
+    <span class="ic icon-24"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15h16l-2 4H6z"/><path d="M12 4v9"/><path d="M7 9l5-5 5 5"/></svg></span>
+    <span class="lbl">Yachts</span>
+  </button>
+  <button class="bottom-tab reset-btn" type="button">
+    <span class="ic icon-24"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 14.6 9l6.2.6-4.6 4.2 1.3 6.1L12 16.9 6.5 19.9l1.3-6.1-4.6-4.2 6.2-.6z"/></svg></span>
+    <span class="lbl">Matches</span>
+  </button>
+  <button class="bottom-tab reset-btn" type="button">
+    <span class="ic icon-24"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+    <span class="lbl">Emails</span>
+  </button>
+</nav>
+
+<!-- CONFIRM MODAL — generic warning, no per-season list -->
+<div class="modal-overlay" id="withdrawOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="withdrawTitle">
+    <button class="modal-close" onclick="closeWithdrawModal()" aria-label="Close dialog">
+      <svg class="icon icon-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+    </button>
+    <div class="modal-icon-wrap warning">
+      <svg class="icon icon-24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 2.5 20h19z"/><line x1="12" y1="9" x2="12" y2="14"/><circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/></svg>
+    </div>
+    <h2 class="heading-sm" id="withdrawTitle">Withdraw this yacht from charter?</h2>
+    <p>This yacht will be marked <strong>Withdrawn</strong> and removed from charter marketing. Any upcoming charter seasons will also be removed to keep the listing consistent. This can't be undone automatically — a new season will need to be added if the yacht returns to charter.</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" type="button" onclick="closeWithdrawModal()">Cancel</button>
+      <button class="btn btn-destructive" type="button" onclick="confirmWithdraw()">Withdraw Yacht</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status">
+  <span class="ic icon-16"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 2.5 20h19z"/><line x1="12" y1="9" x2="12" y2="14"/><circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/></svg></span>
+  <span id="toastText">Marked as withdrawn. Market Status set to Not for Charter — 2 upcoming seasons removed.</span>
+</div>
+
+<script>
+/* Priority table straight from the Spike Result (YIQ-3084 / YBT-164).
+   Listing Status mapping is applied wherever Manager / Mgmt Company are "live"
+   (current season, future season, or carried over during the buffer) —
+   the Spike Result groups these three fields together and blanks them together.
+   Rates are illustrative brokerage figures, not real listings. */
+
+const COMPANIES = {
+  bradford: { name: 'Bradford Marine',     code: 'CENTRAL_3RD_BROKERS',   label: 'Central / 3rd-Party Brokers' },
+  fraser:   { name: 'Fraser Yachts',        code: 'FRASER_CHARTER_FLEET',  label: 'Fraser Charter Fleet' },
+  nj:       { name: 'Northrop & Johnson',   code: 'N_AND_J_CHARTER_FLEET', label: 'N&J Charter Fleet' },
+  none:     { name: '—',                    code: 'OPEN_LISTING',         label: 'Open Listing' }
+};
+
+function computeFields(seasonState, companyKey){
+  const c = COMPANIES[companyKey];
+  const manager = companyKey === 'none' ? '—' : 'Andrea Spires';
+
+  switch(seasonState){
+    case 'active':
+      return {
+        status: 'Officially for Charter',
+        season: 'Summer 2026',
+        highRate: '$185,000 /wk',
+        lowRate: '$165,000 /wk',
+        manager, mgmt: c.name, listingLabel: c.label, listingCode: c.code,
+        note: 'A season is active today, so Market Status, Listing Status, Season, Rates, Manager and Mgmt Company all read straight from it.'
+      };
+    case 'futureBooked':
+      return {
+        status: 'Officially for Charter',
+        season: 'Summer 2027 (upcoming)',
+        highRate: '$67,000 /wk',
+        lowRate: '$45,000 /wk',
+        manager, mgmt: c.name, listingLabel: c.label, listingCode: c.code,
+        note: 'No season is active today, but a future one is already on file — Season, Rates, Manager, Mgmt Company and Listing Status all come from that future season instead of going blank.'
+      };
+    case 'buffer':
+      return {
+        status: 'Officially for Charter',
+        season: 'TBA — To Be Advertised',
+        highRate: 'TBA',
+        lowRate: 'TBA',
+        manager, mgmt: c.name, listingLabel: c.label, listingCode: c.code,
+        note: 'No current or future season yet, inside the buffer window — Manager, Mgmt Company and Listing Status all carry over unchanged from the last known season (Listing Status must not flip to Open Listing here).'
+      };
+    case 'bufferExpired':
+      return {
+        status: 'Not for Charter', season: '—', highRate: '—', lowRate: '—',
+        manager: '—', mgmt: '—', listingLabel: '—', listingCode: '',
+        note: 'The buffer ran out with still no season on record — Manager, Mgmt Company and Listing Status clear along with Season and Rates.'
+      };
+    case 'withdrawn':
+      return {
+        status: 'Not for Charter', season: '—', highRate: '—', lowRate: '—',
+        manager: '—', mgmt: '—', listingLabel: '—', listingCode: '',
+        note: 'Explicitly withdrawn — bypasses the buffer entirely, even if a future season existed. Manager, Mgmt Company and Listing Status clear, same as buffer-expired.'
+      };
+  }
+}
+
+let currentSeasonState = 'active';
+let currentCompanyKey = 'bradford';
+
+function setFieldText(id, value){
+  const el = document.getElementById(id);
+  el.textContent = value;
+  el.classList.toggle('muted', value === '—');
+}
+
+function render(){
+  const f = computeFields(currentSeasonState, currentCompanyKey);
+  setFieldText('f-status', f.status);
+  setFieldText('f-listing', f.listingLabel);
+  document.getElementById('f-listing-code').textContent = f.listingCode;
+  document.getElementById('f-listing-code').style.display = f.listingCode ? '' : 'none';
+  setFieldText('f-season', f.season);
+  setFieldText('f-highrate', f.highRate);
+  setFieldText('f-lowrate', f.lowRate);
+  setFieldText('f-manager', f.manager);
+  setFieldText('f-mgmt', f.mgmt);
+  document.getElementById('scenarioNote').querySelector('span').textContent = f.note;
+}
+
+function setScenario(key){
+  currentSeasonState = key;
+  document.getElementById('scenarioSelect').value = key;
+  document.getElementById('withdrawTrigger').disabled = (key === 'withdrawn');
+  document.getElementById('companySelect').disabled = (key === 'bufferExpired' || key === 'withdrawn');
+  render();
+}
+
+function setCompany(key){
+  currentCompanyKey = key;
+  document.getElementById('companySelect').value = key;
+  render();
+}
+
+/* Menu — Menu/Expanded (216) + Menu/Collapsed (92), one shell.
+   Expanded is the default above 1024px, collapsed 640–1024px, and below
+   640px the menu is replaced entirely by the bottom tab bar. The default
+   only applies until the user has manually toggled; after that their
+   choice is respected regardless of further resizing (critical rule 2). */
+let userToggledMenu = false;
+
+function setMenu(collapsed, isManual){
+  if (isManual) userToggledMenu = true;
+  const menu = document.getElementById('menu');
+  menu.classList.toggle('collapsed', collapsed);
+  document.documentElement.style.setProperty('--menu-width', collapsed ? 'var(--layout-sidebar-rail)' : 'var(--layout-sidebar-expanded)');
+  document.getElementById('menuExp').classList.toggle('on', !collapsed);
+  document.getElementById('menuCol').classList.toggle('on', collapsed);
+  document.getElementById('collapseBtn').innerHTML = collapsed
+    ? '<svg class="icon icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>'
+    : '<svg class="icon icon-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+  document.getElementById('collapseBtn').setAttribute('aria-label', collapsed ? 'Expand menu' : 'Collapse menu');
+}
+function toggleMenu(){
+  const collapsed = !document.getElementById('menu').classList.contains('collapsed');
+  setMenu(collapsed, true);
+}
+function applyMenuDefault(){
+  if (userToggledMenu) return;
+  setMenu(window.innerWidth < 1024 && window.innerWidth >= 640, false);
+}
+window.addEventListener('resize', applyMenuDefault);
+
+/* Tabs — shared behaviour for both tab levels. Clicking updates which tab
+   is visually active; only the Charter / Charter History panel has real
+   content wired up in this prototype (matches the feature under review). */
+function wireTabs(containerId){
+  const container = document.getElementById(containerId);
+  container.querySelectorAll('[role="tab"]').forEach(tabEl => {
+    tabEl.addEventListener('click', () => {
+      container.querySelectorAll('[role="tab"]').forEach(t => t.setAttribute('aria-selected', 'false'));
+      tabEl.setAttribute('aria-selected', 'true');
+    });
+  });
+}
+wireTabs('tabsLevel1');
+wireTabs('tabsLevel2');
+
+function openWithdrawModal(){
+  document.getElementById('withdrawOverlay').classList.add('open');
+}
+function closeWithdrawModal(){
+  document.getElementById('withdrawOverlay').classList.remove('open');
+}
+function confirmWithdraw(){
+  closeWithdrawModal();
+  // visual feedback only — this is a prototype, no persistence
+  document.querySelectorAll('tr.future').forEach(row => row.style.display = 'none');
+  setScenario('withdrawn');
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3600);
+}
+
+// initialize on load
+setScenario('active');
+applyMenuDefault();
+</script>
+</body>
+</html>
